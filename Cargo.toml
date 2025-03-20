@@ -1,0 +1,6 @@
+[package]
+name = "ray_tracing_one_week"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
