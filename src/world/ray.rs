@@ -9,11 +9,10 @@ use super::vec3::Vec3;
 /// Create a new ray at position (0, 0, 0) that is sent at direction (1, 0, 0)
 ///
 /// ```no_run
-/// use ray_tracing_one_week::world::vec3::Vec3;
-/// use ray_tracing_one_week::world::ray::Ray;
+/// use ray_tracing::world::{Vec3, Ray};
 ///
 /// fn main() {
-///     let ray = Ray::new(Vec3::new(0.0, 0.0, 0.0), Vec3(1.0, 0, 0));
+///     let ray = Ray::new(Vec3::new(0.0, 0.0, 0.0), Vec3::new(1.0, 0.0, 0.0));
 /// }
 ///
 /// ```
@@ -21,11 +20,10 @@ use super::vec3::Vec3;
 /// Calculate the ray's position at t
 ///
 /// ```no_run
-/// use ray_tracing_one_week::world::vec3::Vec3;
-/// use ray_tracing_one_week::world::ray::Ray;
+/// use ray_tracing::world::{Vec3, Ray};
 ///
 /// fn main() {
-///     let ray = Ray::new(Vec3::new(0.0, 0.0, 0.0), Vec3(1.0, 0, 0));
+///     let ray = Ray::new(Vec3::new(0.0, 0.0, 0.0), Vec3::new(1.0, 0.0, 0.0));
 ///
 ///     let ray_position = ray.calculate_ray_position(0.8);
 ///
@@ -41,7 +39,9 @@ pub struct Ray {
 
 impl Ray {
     /// creates a new instance of a ray
-    pub fn new(starting_position: Vec3, direction: Vec3) -> Self {
+    pub fn new(starting_position: Vec3, mut direction: Vec3) -> Self {
+        direction.make_unit();
+
         return Self {
             starting_position,
             direction,

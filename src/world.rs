@@ -1,6 +1,10 @@
 /// module implementing the Vec3 struct and all of the math behind it
-pub mod vec3;
+mod vec3;
 /// module implementing a Camera struct
-pub mod camera;
+mod camera;
 /// module implementing a Ray struct
-pub mod ray;
+mod ray;
+
+pub use vec3::Vec3;
+pub use camera::{Camera, ViewportAngles};
+pub use ray::Ray;

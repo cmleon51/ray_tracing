@@ -11,7 +11,7 @@ use std::ops;
 /// create a new Vec3 with all zero
 ///
 ///```no_run
-/// use ray_tracing_one_week::world::vec3::Vec3;
+/// use ray_tracing::world::Vec3;
 /// 
 /// fn main() {
 ///     let vector = Vec3::new(0.0, 0.0, 0.0);
@@ -21,7 +21,7 @@ use std::ops;
 /// Execute addition between two vectors
 ///
 ///```no_run
-/// use ray_tracing_one_week::world::vec3::Vec3;
+/// use ray_tracing::world::Vec3;
 /// 
 /// fn main() {
 ///     let vector1 = Vec3::new(3.0, 1.0, 2.0);
@@ -81,6 +81,14 @@ impl Vec3 {
     /// retrieves the z coordinate
     pub fn get_z(&self) -> &f64 {
         return &self.z;
+    }
+
+    /// makes the current vector a 'unit vector'
+    pub fn make_unit(&mut self) -> &mut Self {
+        let vector_magnitude = (self.dot_product(self)).sqrt();
+        *self = self.clone() / vector_magnitude;
+
+        return self;
     }
 }
 

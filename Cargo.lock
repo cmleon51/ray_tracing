@@ -3,5 +3,5 @@
 version = 4
 
 [[package]]
-name = "ray_tracing_one_week"
+name = "ray_tracing"
 version = "0.1.0"

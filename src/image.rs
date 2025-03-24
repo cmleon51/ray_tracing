@@ -13,7 +13,7 @@ use pixel::Pixel;
 /// Create a new image of size 256 x 256:
 ///
 /// ```no_run
-/// use ray_tracing_one_week::image::Image;
+/// use ray_tracing::image::Image;
 /// 
 /// fn main() {
 ///     let image = Image::new(256, 256);
@@ -23,7 +23,7 @@ use pixel::Pixel;
 /// Iterates over all of the [`Pixels`] with immutable references
 ///
 /// ```no_run
-/// use ray_tracing_one_week::image::Image;
+/// use ray_tracing::image::Image;
 /// 
 /// fn main() {
 ///     let image = Image::new(256, 256);
@@ -37,7 +37,7 @@ use pixel::Pixel;
 /// Iterates over all of the [`Pixels`] with mutable references
 ///
 /// ```no_run
-/// use ray_tracing_one_week::image::Image;
+/// use ray_tracing::image::Image;
 /// 
 /// fn main() {
 ///     let mut image = Image::new(256, 256);
@@ -61,8 +61,8 @@ impl Image {
     pub fn new(width: u32, height: u32) -> Self {
         let mut pixels: Vec<Pixel> = Vec::new();
 
-        for y in 0..=height {
-            for x in 0..=width {
+        for y in 0..height {
+            for x in 0..width {
                 pixels.push(Pixel::new(x, y, 255, 255, 255));
             }
         }

@@ -1,5 +1,5 @@
 [package]
-name = "ray_tracing_one_week"
+name = "ray_tracing"
 version = "0.1.0"
 edition = "2024"
 
