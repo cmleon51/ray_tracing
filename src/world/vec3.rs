@@ -12,7 +12,7 @@ use std::ops;
 ///
 ///```no_run
 /// use ray_tracing::world::Vec3;
-/// 
+///
 /// fn main() {
 ///     let vector = Vec3::new(0.0, 0.0, 0.0);
 /// }
@@ -22,7 +22,7 @@ use std::ops;
 ///
 ///```no_run
 /// use ray_tracing::world::Vec3;
-/// 
+///
 /// fn main() {
 ///     let vector1 = Vec3::new(3.0, 1.0, 2.0);
 ///     let vector2 = Vec3::new(1.0, 2.0, 3.0);
@@ -43,11 +43,7 @@ pub struct Vec3 {
 impl Vec3 {
     /// creates a new instance of Vec3 with the given coordinates
     pub fn new(x: f64, y: f64, z: f64) -> Self {
-        return Self {
-            x,
-            y,
-            z,
-        }
+        return Self { x, y, z };
     }
 
     /// executes the dot product between two Vec3
@@ -92,7 +88,7 @@ impl Vec3 {
     }
 }
 
-impl ops::Mul<f64> for Vec3 { 
+impl ops::Mul<f64> for Vec3 {
     type Output = Self;
 
     fn mul(self, rhs: f64) -> Self::Output {
@@ -100,7 +96,7 @@ impl ops::Mul<f64> for Vec3 {
     }
 }
 
-impl ops::Div<f64> for Vec3 { 
+impl ops::Div<f64> for Vec3 {
     type Output = Self;
 
     fn div(self, rhs: f64) -> Self::Output {
@@ -108,7 +104,7 @@ impl ops::Div<f64> for Vec3 {
     }
 }
 
-impl ops::Sub<f64> for Vec3 { 
+impl ops::Sub<f64> for Vec3 {
     type Output = Self;
 
     fn sub(self, rhs: f64) -> Self::Output {
@@ -116,7 +112,7 @@ impl ops::Sub<f64> for Vec3 {
     }
 }
 
-impl ops::Add<f64> for Vec3 { 
+impl ops::Add<f64> for Vec3 {
     type Output = Self;
 
     fn add(self, rhs: f64) -> Self::Output {

@@ -1,6 +1,6 @@
 use super::vec3::Vec3;
 
-/// An Object abstracting the viewport 
+/// An Object abstracting the viewport
 ///
 /// This object is not public since i wanted to make the viewport always stay at the camera's
 /// look_at vector
@@ -8,7 +8,7 @@ use super::vec3::Vec3;
 struct Viewport {
     pub width: f64,
     pub height: f64,
-    pub position: Vec3
+    pub position: Vec3,
 }
 
 /// An Enum defining each and every angle of the viewport
@@ -16,7 +16,7 @@ pub enum ViewportAngles {
     UpperLeft,
     UpperRight,
     LowerLeft,
-    LowerRight
+    LowerRight,
 }
 
 /// An Object abstracting a Camera in a 3d world
@@ -54,7 +54,13 @@ pub struct Camera {
 
 impl Camera {
     /// create a new camera (the u_vector and v_vector are calculated automatically
-    pub fn new(position: Vec3, mut look_at: Vec3, up_vector: Vec3, viewport_width: f64, aspect_ratio: f64) -> Self {
+    pub fn new(
+        position: Vec3,
+        mut look_at: Vec3,
+        up_vector: Vec3,
+        viewport_width: f64,
+        aspect_ratio: f64,
+    ) -> Self {
         look_at.make_unit();
 
         let mut camera = Self {
@@ -66,8 +72,8 @@ impl Camera {
             viewport: Viewport {
                 width: viewport_width,
                 height: viewport_width / aspect_ratio,
-                position: look_at
-            }
+                position: look_at,
+            },
         };
 
         camera.update_camera();
@@ -139,16 +145,30 @@ impl Camera {
 
     /// retrieves the specified ['ViewportAngle'] of the viewport
     pub fn get_viewport_angle(&self, wich_angle: ViewportAngles) -> Vec3 {
-         return match wich_angle {
-            ViewportAngles::UpperLeft => self.position - (self.u_vector * (self.viewport.width / 2.0)) + (self.v_vector
-                * self.viewport.height / 2.0) + self.look_at,
-            ViewportAngles::UpperRight => self.position + (self.u_vector * (self.viewport.width / 2.0)) + (self.v_vector
-                * self.viewport.height / 2.0) + self.look_at,
-            ViewportAngles::LowerLeft => self.position - (self.u_vector * (self.viewport.width / 2.0)) - (self.v_vector
-                * self.viewport.height / 2.0) + self.look_at,
-            ViewportAngles::LowerRight => self.position + (self.u_vector * (self.viewport.width / 2.0)) - (self.v_vector
-                * self.viewport.height / 2.0) + self.look_at,
-        }
+        return match wich_angle {
+            ViewportAngles::UpperLeft => {
+                self.position - (self.u_vector * (self.viewport.width / 2.0))
+                    + (self.v_vector * self.viewport.height / 2.0)
+                    + self.look_at
+            }
+            ViewportAngles::UpperRight => {
+                self.position
+                    + (self.u_vector * (self.viewport.width / 2.0))
+                    + (self.v_vector * self.viewport.height / 2.0)
+                    + self.look_at
+            }
+            ViewportAngles::LowerLeft => {
+                self.position
+                    - (self.u_vector * (self.viewport.width / 2.0))
+                    - (self.v_vector * self.viewport.height / 2.0)
+                    + self.look_at
+            }
+            ViewportAngles::LowerRight => {
+                self.position + (self.u_vector * (self.viewport.width / 2.0))
+                    - (self.v_vector * self.viewport.height / 2.0)
+                    + self.look_at
+            }
+        };
     }
 
     /// updates the camera's u vector, v vector and viewport (this function is called every time the camera
@@ -164,5 +184,4 @@ impl Camera {
 
         return self;
     }
-
 }

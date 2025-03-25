@@ -4,7 +4,7 @@ use super::vec3::Vec3;
 ///
 /// Trough the use of this object you can implement a ray moving trough 3d space
 ///
-/// # Examples 
+/// # Examples
 ///
 /// Create a new ray at position (0, 0, 0) that is sent at direction (1, 0, 0)
 ///

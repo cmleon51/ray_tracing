@@ -1,4 +1,4 @@
-mod color; 
+mod color;
 mod pixel;
 
 use pixel::Pixel;
@@ -14,7 +14,7 @@ use pixel::Pixel;
 ///
 /// ```no_run
 /// use ray_tracing::image::Image;
-/// 
+///
 /// fn main() {
 ///     let image = Image::new(256, 256);
 /// }
@@ -24,7 +24,7 @@ use pixel::Pixel;
 ///
 /// ```no_run
 /// use ray_tracing::image::Image;
-/// 
+///
 /// fn main() {
 ///     let image = Image::new(256, 256);
 ///
@@ -38,7 +38,7 @@ use pixel::Pixel;
 ///
 /// ```no_run
 /// use ray_tracing::image::Image;
-/// 
+///
 /// fn main() {
 ///     let mut image = Image::new(256, 256);
 ///
