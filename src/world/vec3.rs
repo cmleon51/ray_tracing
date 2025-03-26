@@ -79,10 +79,15 @@ impl Vec3 {
         return &self.z;
     }
 
+    /// retrieves the vector's magnitude (length)
+    pub fn get_length(&self) -> f64 {
+        return self.dot_product(self).sqrt();
+    }
+
     /// makes the current vector a 'unit vector'
     pub fn make_unit(&mut self) -> &mut Self {
-        let vector_magnitude = (self.dot_product(self)).sqrt();
-        *self = self.clone() / vector_magnitude;
+        let vector_length = self.get_length();
+        (*self) = self.clone() / vector_length;
 
         return self;
     }
