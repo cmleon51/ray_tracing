@@ -36,7 +36,7 @@ impl Object for Sphere {
         let t1 = (-b + discriminant.sqrt()) / (2.0 * a);
         let t2 = (-b - discriminant.sqrt()) / (2.0 * a);
 
-        return f64::max(t1, t2); // i think that the syntax is more readable like this
+        return f64::min(t1, t2); // i think that the syntax is more readable like this
     }
 
     // TODO: check if the point is inside of the sphere in a better way since we have to account
@@ -46,7 +46,7 @@ impl Object for Sphere {
         //    return None;
         //}
 
-        return Some(point - self.position);
+        return Some(*((point - self.position).make_unit()));
     }
 
     fn get_color(&self) -> &RGB {

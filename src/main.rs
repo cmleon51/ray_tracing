@@ -1,15 +1,16 @@
 use std::fs::File;
 use std::io::prelude::Write;
 use ray_tracing::image::Image;
-use ray_tracing::world::{self, Camera, Ray, Vec3, ViewportAngles};
+use ray_tracing::world::{self, AmbientLight, Camera, DirectionalLight, Light, PointLight, Ray, Sphere, Vec3, ViewportAngles};
 
 fn main() {
-    let mut image = Image::new(800, 400);
+    let mut image = Image::new(600, 600);
+    let mut world_objects = world::create_objects_vec();
     let camera = Camera::new(
         Vec3::new(0.0, 0.0, 0.0),
         Vec3::new(0.0, 0.0, 1.0),
         Vec3::new(0.0, 1.0, 0.0),
-        2.0,
+        1.0,
         image.get_aspect_ratio(),
     );
 
@@ -21,13 +22,16 @@ fn main() {
     let image_width = image.get_width();
     let image_height = image.get_height();
 
-    let viewport_x_color = 255.0 / (*camera.get_viewport_width());
-    let viewport_y_color = 255.0 / (*camera.get_viewport_height());
+    world_objects.push(Box::new(Sphere::new(Vec3::new(0.0, -5001.0, 0.0), 5000.0, 255, 255, 0)));
+    world_objects.push(Box::new(Sphere::new(Vec3::new(0.0, -1.0, 3.0), 1.0, 255, 0, 0)));
+    world_objects.push(Box::new(Sphere::new(Vec3::new(2.0, 0.0, 4.0), 1.0, 0, 0, 255)));
+    world_objects.push(Box::new(Sphere::new(Vec3::new(-2.0, 0.0, 4.0), 1.0, 0, 255, 0)));
 
-    let mut world_objects = world::create_objects_vec();
-
-    world_objects.push(Box::new(world::Sphere::new(Vec3::new(0.0, 0.0, 2.0), 0.4)));
-    world_objects.push(Box::new(world::Sphere::new(Vec3::new(1.0, 0.0, 2.0), 0.4)));
+    let mut world_lights: Vec<Box<dyn Light>> = vec![];
+    
+    world_lights.push(Box::new(PointLight::new(Vec3::new(2.0, 1.0, 0.0), 0.6)));
+    world_lights.push(Box::new(DirectionalLight::new(Vec3::new(1.0, 4.0, 4.0), 0.2)));
+    world_lights.push(Box::new(AmbientLight::new(0.2)));
 
     for pixel in &mut image {
         let pixel_location = viewport_upper_left
@@ -40,7 +44,17 @@ fn main() {
             let t = object.is_object_hit(&ray);
 
             if t > 0.0 {
-                pixel.change_color((((*pixel_location.get_x()) + (*camera.get_viewport_width()) / 2.0) * viewport_x_color) as u8, 0, (((*pixel_location.get_y()) + (*camera.get_viewport_height()) / 2.0) * viewport_y_color) as u8);
+                let mut point_light_intensity = 0.0;
+                // light calculation
+                for light in &world_lights {
+                    let light_intensity = light.get_intensity(ray.calculate_ray_position(t), object);
+
+                    if let Some(light_intensity) = light_intensity {
+                        point_light_intensity += light_intensity;
+                    }
+                }
+
+                pixel.change_color((f64::from(object.get_color().red()) * point_light_intensity) as u8,(f64::from(object.get_color().green()) * point_light_intensity) as u8,(f64::from(object.get_color().blue()) * point_light_intensity) as u8);
             }
         }
     }

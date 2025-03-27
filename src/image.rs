@@ -1,7 +1,8 @@
 mod color;
 mod pixel;
 
-use pixel::Pixel;
+pub use pixel::Pixel;
+pub use color::RGB;
 
 /// an object abstracting the output Image
 ///
