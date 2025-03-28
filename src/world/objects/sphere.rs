@@ -11,16 +11,18 @@ pub struct Sphere {
     position: Vec3,
     radius: f64,
     color: RGB,
+    specularity: Option<f64>,
 }
 
 impl Sphere {
     /// function to create a new sphere
     /// even thogh the fields are public i like to have a function to create a new sphere
-    pub fn new(position: Vec3, radius: f64, red: u8, green: u8, blue: u8) -> Self {
+    pub fn new(position: Vec3, radius: f64, red: u8, green: u8, blue: u8, specularity: Option<f64>) -> Self {
         return Self { 
             position,
             radius,
-            color: RGB::new(red, green, blue) 
+            color: RGB::new(red, green, blue),
+            specularity,
         };
     }
 }
@@ -53,4 +55,7 @@ impl Object for Sphere {
         return &self.color;
     }
 
+    fn get_specularity(&self) -> Option<f64> {
+        return self.specularity;
+    }
 }

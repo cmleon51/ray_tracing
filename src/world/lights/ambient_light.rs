@@ -19,12 +19,11 @@ impl AmbientLight {
 }
 
 impl Light for AmbientLight {
-    fn get_intensity(&self, point: Vec3, object: &Box<dyn Object>) -> Option<f64> {
-        let object_normal = object.get_normal(point);
-
-        return match object_normal {
-            None => None,
-            Some(_) => Some(self.intensity),
+    fn get_intensity(&self, point: Vec3, viewing_vector: Vec3, object: &Box<dyn Object>) -> Option<f64> {
+        if let Some(_) = object.get_normal(point) {
+            return Some(self.intensity);
         }
+
+        return None;
     }
 }

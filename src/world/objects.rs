@@ -18,6 +18,9 @@ pub trait Object {
 
     /// this method should return the color of the object
     fn get_color(&self) -> &RGB;
+
+    /// this methos should return the specularity of the current object
+    fn get_specularity(&self) -> Option<f64>;
 }
 
 /// module implementing a sphere in our ray traced world

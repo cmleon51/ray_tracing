@@ -22,10 +22,10 @@ fn main() {
     let image_width = image.get_width();
     let image_height = image.get_height();
 
-    world_objects.push(Box::new(Sphere::new(Vec3::new(0.0, -5001.0, 0.0), 5000.0, 255, 255, 0)));
-    world_objects.push(Box::new(Sphere::new(Vec3::new(0.0, -1.0, 3.0), 1.0, 255, 0, 0)));
-    world_objects.push(Box::new(Sphere::new(Vec3::new(2.0, 0.0, 4.0), 1.0, 0, 0, 255)));
-    world_objects.push(Box::new(Sphere::new(Vec3::new(-2.0, 0.0, 4.0), 1.0, 0, 255, 0)));
+    world_objects.push(Box::new(Sphere::new(Vec3::new(0.0, -5001.0, 0.0), 5000.0, 255, 255, 0, Some(1000.0))));
+    world_objects.push(Box::new(Sphere::new(Vec3::new(0.0, -1.0, 3.0), 1.0, 255, 0, 0, Some(500.0))));
+    world_objects.push(Box::new(Sphere::new(Vec3::new(2.0, 0.0, 4.0), 1.0, 0, 0, 255, Some(500.0))));
+    world_objects.push(Box::new(Sphere::new(Vec3::new(-2.0, 0.0, 4.0), 1.0, 0, 255, 0, Some(10.0))));
 
     let mut world_lights: Vec<Box<dyn Light>> = vec![];
     
@@ -40,21 +40,25 @@ fn main() {
 
         let ray = Ray::new(*camera.get_position(), pixel_location);
 
+        let mut smallest_t = f64::MAX;
         for object in &world_objects {
             let t = object.is_object_hit(&ray);
+            
+            if t < smallest_t {
+                if t > 0.0 {
+                    smallest_t = t;
+                    let mut point_light_intensity = 0.0;
+                    // light calculation
+                    for light in &world_lights {
+                        let light_intensity = light.get_intensity(ray.calculate_ray_position(t), (*ray.get_direction()) * -1.0, object);
 
-            if t > 0.0 {
-                let mut point_light_intensity = 0.0;
-                // light calculation
-                for light in &world_lights {
-                    let light_intensity = light.get_intensity(ray.calculate_ray_position(t), object);
-
-                    if let Some(light_intensity) = light_intensity {
-                        point_light_intensity += light_intensity;
+                        if let Some(light_intensity) = light_intensity {
+                            point_light_intensity += light_intensity;
+                        }
                     }
-                }
 
-                pixel.change_color((f64::from(object.get_color().red()) * point_light_intensity) as u8,(f64::from(object.get_color().green()) * point_light_intensity) as u8,(f64::from(object.get_color().blue()) * point_light_intensity) as u8);
+                    pixel.change_color((f64::from(object.get_color().red()) * point_light_intensity) as u8,(f64::from(object.get_color().green()) * point_light_intensity) as u8,(f64::from(object.get_color().blue()) * point_light_intensity) as u8);
+                }
             }
         }
     }
