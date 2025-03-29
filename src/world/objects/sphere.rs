@@ -21,16 +21,14 @@ impl Sphere {
     pub fn new(
         position: Vec3,
         radius: f64,
-        red: u8,
-        green: u8,
-        blue: u8,
+        color: RGB,
         specularity: Option<f64>,
         reflection: Option<f64>,
     ) -> Self {
         return Self {
             position,
             radius,
-            color: RGB::new(red, green, blue),
+            color,
             specularity,
             reflection,
         };

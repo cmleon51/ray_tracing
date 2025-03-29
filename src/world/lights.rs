@@ -12,7 +12,6 @@ pub trait Light {
         viewing_vector: Vec3,
         current_object: &Box<dyn Object>,
         other_objects: &Vec<Box<dyn Object>>,
-        other_lights: &Vec<Box<dyn Light>>,
         light_bounces: u8,
     ) -> RGB;
 }

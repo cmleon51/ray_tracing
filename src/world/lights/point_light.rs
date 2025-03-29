@@ -30,7 +30,6 @@ impl Light for PointLight {
         viewing_vector: Vec3,
         current_object: &Box<dyn Object>,
         other_objects: &Vec<Box<dyn Object>>,
-        other_lights: &Vec<Box<dyn Light>>,
         light_bounces: u8,
     ) -> RGB {
         let point = ray.calculate_ray_position(t);
@@ -69,9 +68,6 @@ impl Light for PointLight {
 
             if let Some(specularity) = current_object.get_specularity() {
                 if specularity >= 0.0 {
-                    // recuperiamo il vettore R (riflesso di 'light_direction')
-                    // non c'è bisogno di fare il 'sqrt' di light_normal_dotproduct in quanto il
-                    // normale è già normalizzato
                     let light_reflection = light_direction.reflect(&normal);
                     let light_reflection_point_dot = light_reflection.dot_product(&viewing_vector);
 
@@ -108,17 +104,14 @@ impl Light for PointLight {
                     }
 
                     if let Some(hit_object) = hit_object {
-                        for light in other_lights {
-                            reflected_color += light.compute_color(
+                            reflected_color += self.compute_color(
                                 &bounce_ray,
                                 smallest_t,
                                 *bounce_ray.get_direction() * -1.0,
                                 hit_object,
                                 other_objects,
-                                other_lights,
                                 light_bounces - 1,
                             );
-                        }
                     }
 
                     final_color =

@@ -30,7 +30,6 @@ impl Light for DirectionalLight {
         viewing_vector: Vec3,
         current_object: &Box<dyn Object>,
         other_objects: &Vec<Box<dyn Object>>,
-        other_lights: &Vec<Box<dyn Light>>,
         light_bounces: u8,
     ) -> RGB {
         let point = ray.calculate_ray_position(t);
@@ -105,17 +104,14 @@ impl Light for DirectionalLight {
                     }
 
                     if let Some(hit_object) = hit_object {
-                        for light in other_lights {
-                            reflected_color += light.compute_color(
-                                &bounce_ray,
-                                smallest_t,
-                                *bounce_ray.get_direction() * -1.0,
-                                hit_object,
-                                other_objects,
-                                other_lights,
-                                light_bounces - 1,
-                            );
-                        }
+                        reflected_color += self.compute_color(
+                            &bounce_ray,
+                            smallest_t,
+                            *bounce_ray.get_direction() * -1.0,
+                            hit_object,
+                            other_objects,
+                            light_bounces - 1,
+                        );
                     }
 
                     final_color =

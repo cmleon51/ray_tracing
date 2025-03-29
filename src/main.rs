@@ -9,6 +9,8 @@ use std::io::prelude::Write;
 fn main() {
     let mut image = Image::new(600, 600, RGB::new(0, 0, 0));
     let mut world_objects = ray_utils::create_objects_vec();
+    let mut world_lights = ray_utils::create_lights_vec();
+    let light_bounces = 3;
     let camera = Camera::new(
         Vec3::new(0.0, 0.0, 0.0),
         Vec3::new(0.0, 0.0, 1.0),
@@ -26,41 +28,31 @@ fn main() {
     world_objects.push(Box::new(Sphere::new(
         Vec3::new(0.0, -1.0, 3.0),
         1.0,
-        255,
-        0,
-        0,
+        RGB::new(255, 0, 0),
         Some(500.0),
         Some(0.2),
     )));
     world_objects.push(Box::new(Sphere::new(
         Vec3::new(2.0, 0.0, 4.0),
         1.0,
-        0,
-        0,
-        255,
+        RGB::new(0, 0, 255),
         Some(500.0),
         Some(0.3),
     )));
     world_objects.push(Box::new(Sphere::new(
         Vec3::new(-2.0, 0.0, 4.0),
         1.0,
-        0,
-        255,
-        0,
+        RGB::new(0, 255, 0),
         Some(10.0),
         Some(0.4),
     )));
     world_objects.push(Box::new(Sphere::new(
         Vec3::new(0.0, -5001.0, 0.0),
         5000.0,
-        255,
-        255,
-        0,
+        RGB::new(255, 255, 0),
         Some(1000.0),
         Some(0.5),
     )));
-
-    let mut world_lights = ray_utils::create_lights_vec();
 
     world_lights.push(Box::new(PointLight::new(Vec3::new(2.0, 1.0, 0.0), 0.6)));
     world_lights.push(Box::new(DirectionalLight::new(
@@ -95,8 +87,7 @@ fn main() {
                         (*ray.get_direction()) * -1.0,
                         object,
                         &world_objects,
-                        &world_lights,
-                        3,
+                        light_bounces,
                     );
                 }
 
