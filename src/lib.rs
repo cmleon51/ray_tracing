@@ -10,3 +10,6 @@ pub mod image;
 
 /// This module abstracts the world in which the ray tracing is done
 pub mod world;
+
+///This module gives the user of this library some utilities to easily use the library
+pub mod ray_utils;

@@ -1,6 +1,6 @@
 use super::Object;
-use crate::world::{Ray, Vec3};
 use crate::image::RGB;
+use crate::world::{Ray, Vec3};
 
 /// object to abstract a sphere in our ray traced world
 ///
@@ -12,17 +12,27 @@ pub struct Sphere {
     radius: f64,
     color: RGB,
     specularity: Option<f64>,
+    reflection: Option<f64>,
 }
 
 impl Sphere {
     /// function to create a new sphere
     /// even thogh the fields are public i like to have a function to create a new sphere
-    pub fn new(position: Vec3, radius: f64, red: u8, green: u8, blue: u8, specularity: Option<f64>) -> Self {
-        return Self { 
+    pub fn new(
+        position: Vec3,
+        radius: f64,
+        red: u8,
+        green: u8,
+        blue: u8,
+        specularity: Option<f64>,
+        reflection: Option<f64>,
+    ) -> Self {
+        return Self {
             position,
             radius,
             color: RGB::new(red, green, blue),
             specularity,
+            reflection,
         };
     }
 }
@@ -31,7 +41,7 @@ impl Object for Sphere {
     fn is_object_hit(&self, ray: &Ray) -> f64 {
         let oc = (*ray.get_position()) - self.position;
         let a = ray.get_direction().dot_product(ray.get_direction()); // should always be one
-                                                                           // but who knows
+        // but who knows
         let b = ray.get_direction().dot_product(&oc) * 2.0;
         let c = oc.dot_product(&oc) - (self.radius * self.radius);
         let discriminant = b * b - 4.0 * a * c;
@@ -58,5 +68,9 @@ impl Object for Sphere {
 
     fn get_specularity(&self) -> Option<f64> {
         return self.specularity;
+    }
+
+    fn get_reflection(&self) -> Option<f64> {
+        return self.reflection;
     }
 }

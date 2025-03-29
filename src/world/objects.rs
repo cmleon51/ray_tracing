@@ -1,6 +1,6 @@
 // I'm not sure which version would be better
-use crate::world::Ray;
 use crate::image::RGB;
+use crate::world::Ray;
 use crate::world::Vec3;
 //use super::Ray;
 //use super::Vec3;
@@ -21,6 +21,9 @@ pub trait Object {
 
     /// this methos should return the specularity of the current object
     fn get_specularity(&self) -> Option<f64>;
+
+    /// this method should return the reflection of the current object
+    fn get_reflection(&self) -> Option<f64>;
 }
 
 /// module implementing a sphere in our ray traced world
@@ -28,8 +31,3 @@ mod sphere;
 
 // TODO: find a better way to extract the modules for the lib or create a function for every object
 pub use sphere::Sphere;
-
-/// function to retrieve a Vec allowing the user to store any object that implements `Hit`
-pub fn create_objects_vec() -> Vec<Box<dyn Object>> {
-    return vec![];
-}

@@ -1,6 +1,7 @@
-use crate::world::Vec3;
+use crate::image::RGB;
 use crate::world::lights::Light;
 use crate::world::objects::Object;
+use crate::world::{Ray, Vec3};
 
 /// Object abstracting an ambient light
 ///
@@ -12,18 +13,27 @@ pub struct AmbientLight {
 
 impl AmbientLight {
     pub fn new(intensity: f64) -> Self {
-        return Self {
-            intensity
-        };
+        return Self { intensity };
     }
 }
 
 impl Light for AmbientLight {
-    fn get_intensity(&self, point: Vec3, viewing_vector: Vec3, current_object: &Box<dyn Object>, other_objects: &Vec<Box<dyn Object>>) -> Option<f64> {
+    fn compute_color(
+        &self,
+        ray: &Ray,
+        t: f64,
+        viewing_vector: Vec3,
+        current_object: &Box<dyn Object>,
+        other_objects: &Vec<Box<dyn Object>>,
+        other_lights: &Vec<Box<dyn Light>>,
+        light_bounces: u8,
+    ) -> RGB {
+        let point = ray.calculate_ray_position(t);
+
         if let Some(_) = current_object.get_normal(point) {
-            return Some(self.intensity);
+            return (*current_object.get_color()) * self.intensity;
         }
 
-        return None;
+        return RGB::new(0, 0, 0);
     }
 }

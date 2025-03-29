@@ -9,12 +9,8 @@ pub struct Pixel {
 }
 
 impl Pixel {
-    pub fn new(x: u32, y: u32, red: u8, green: u8, blue: u8) -> Self {
-        return Self {
-            x,
-            y,
-            color: RGB::new(red, green, blue),
-        };
+    pub fn new(x: u32, y: u32, color: RGB) -> Self {
+        return Self { x, y, color };
     }
 
     pub fn get_x(&self) -> u32 {
@@ -29,8 +25,8 @@ impl Pixel {
         return &self.color;
     }
 
-    pub fn change_color(&mut self, red: u8, green: u8, blue: u8) -> &mut Self {
-        self.color.set_red(red).set_blue(blue).set_green(green);
+    pub fn change_color(&mut self, new_color: RGB) -> &mut Self {
+        self.color = new_color;
 
         return self;
     }

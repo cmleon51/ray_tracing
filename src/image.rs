@@ -1,8 +1,8 @@
 mod color;
 mod pixel;
 
-pub use pixel::Pixel;
 pub use color::RGB;
+pub use pixel::Pixel;
 
 /// an object abstracting the output Image
 ///
@@ -11,23 +11,23 @@ pub use color::RGB;
 ///
 /// # Examples
 ///
-/// Create a new image of size 256 x 256:
+/// Create a new image of size 256 x 256 and background color white
 ///
 /// ```no_run
-/// use ray_tracing::image::Image;
+/// use ray_tracing::image::{Image, RGB};
 ///
 /// fn main() {
-///     let image = Image::new(256, 256);
+///     let image = Image::new(256, 256, RGB::new(255, 255, 255));
 /// }
 /// ```
 ///
 /// Iterates over all of the [`Pixels`] with immutable references
 ///
 /// ```no_run
-/// use ray_tracing::image::Image;
+/// use ray_tracing::image::{Image, RGB};
 ///
 /// fn main() {
-///     let image = Image::new(256, 256);
+///     let image = Image::new(256, 256, RGB::new(255, 255, 255));
 ///
 ///     for pixel in image.into_iter() {
 ///         println!("{:?}", pixel);
@@ -38,10 +38,10 @@ pub use color::RGB;
 /// Iterates over all of the [`Pixels`] with mutable references
 ///
 /// ```no_run
-/// use ray_tracing::image::Image;
+/// use ray_tracing::image::{Image, RGB};
 ///
 /// fn main() {
-///     let mut image = Image::new(256, 256);
+///     let mut image = Image::new(256, 256, RGB::new(255, 255, 255));
 ///
 ///     for pixel in (&mut image).into_iter() {
 ///         println!("{:?}", pixel);
@@ -59,12 +59,12 @@ pub struct Image {
 impl Image {
     /// Creates a new image based upon the given `width` and `height` and creates all of the
     /// [`Pixels`] colored white
-    pub fn new(width: u32, height: u32) -> Self {
+    pub fn new(width: u32, height: u32, background_color: RGB) -> Self {
         let mut pixels: Vec<Pixel> = Vec::new();
 
         for y in 0..height {
             for x in 0..width {
-                pixels.push(Pixel::new(x, y, 255, 255, 255));
+                pixels.push(Pixel::new(x, y, background_color));
             }
         }
 

@@ -112,6 +112,11 @@ impl Vec3 {
 
         return self;
     }
+
+    /// calculates the reflected vector of the first parameter based upon the second one
+    pub fn reflect(&self, respect: &Vec3) -> Vec3 {
+        return (((*respect) * 2.0) * respect.dot_product(self)) - (*self);
+    }
 }
 
 impl ops::Mul<f64> for Vec3 {
