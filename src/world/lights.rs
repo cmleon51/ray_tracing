@@ -5,7 +5,7 @@ use crate::world::objects::Object;
 pub trait Light {
     /// this function should return the intensity of the light based upon a point in space and the
     /// normal of the object given
-    fn get_intensity(&self, point: Vec3, viewing_vector: Vec3, object: &Box<dyn Object>) -> Option<f64>;
+    fn get_intensity(&self, point: Vec3, viewing_vector: Vec3, current_object: &Box<dyn Object>, other_objects: &Vec<Box<dyn Object>>) -> Option<f64>;
 }
 
 /// module to implement a point light

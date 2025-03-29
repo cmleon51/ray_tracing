@@ -7,8 +7,8 @@ fn main() {
     let mut image = Image::new(600, 600);
     let mut world_objects = world::create_objects_vec();
     let camera = Camera::new(
-        Vec3::new(0.0, 0.0, 9.0),
-        Vec3::new(0.0, 0.0, -1.0),
+        Vec3::new(0.0, 0.0, 0.0),
+        Vec3::new(0.0, 0.0, 1.0),
         Vec3::new(0.0, 1.0, 0.0),
         1.0,
         image.get_aspect_ratio(),
@@ -50,7 +50,7 @@ fn main() {
                     let mut point_light_intensity = 0.0;
                     // light calculation
                     for light in &world_lights {
-                        let light_intensity = light.get_intensity(ray.calculate_ray_position(t), (*ray.get_direction()) * -1.0, object);
+                        let light_intensity = light.get_intensity(ray.calculate_ray_position(t), (*ray.get_direction()) * -1.0, object, &world_objects);
 
                         if let Some(light_intensity) = light_intensity {
                             point_light_intensity += light_intensity;

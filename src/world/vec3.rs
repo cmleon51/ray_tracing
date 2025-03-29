@@ -79,6 +79,27 @@ impl Vec3 {
         return &self.z;
     }
 
+    /// sets the x coordinate
+    pub fn set_x(&mut self, new_x: f64) -> &mut Self {
+        self.x = new_x;
+
+        return self;
+    }
+
+    /// sets the y coordinate
+    pub fn set_y(&mut self, new_y: f64) -> &mut Self {
+        self.y = new_y;
+
+        return self;
+    }
+
+    /// sets the z coordinate
+    pub fn set_z(&mut self, new_z: f64) -> &mut Self {
+        self.z = new_z;
+
+        return self;
+    }
+
     /// retrieves the vector's magnitude (length)
     pub fn get_length(&self) -> f64 {
         return self.dot_product(self).sqrt();
