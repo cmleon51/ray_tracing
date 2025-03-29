@@ -30,7 +30,8 @@ impl Sphere {
 impl Object for Sphere {
     fn is_object_hit(&self, ray: &Ray) -> f64 {
         let oc = (*ray.get_position()) - self.position;
-        let a = ray.get_direction().dot_product(ray.get_direction());
+        let a = ray.get_direction().dot_product(ray.get_direction()); // should always be one
+                                                                           // but who knows
         let b = ray.get_direction().dot_product(&oc) * 2.0;
         let c = oc.dot_product(&oc) - (self.radius * self.radius);
         let discriminant = b * b - 4.0 * a * c;

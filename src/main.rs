@@ -7,8 +7,8 @@ fn main() {
     let mut image = Image::new(600, 600);
     let mut world_objects = world::create_objects_vec();
     let camera = Camera::new(
-        Vec3::new(0.0, 0.0, 0.0),
-        Vec3::new(0.0, 0.0, 1.0),
+        Vec3::new(0.0, 0.0, 9.0),
+        Vec3::new(0.0, 0.0, -1.0),
         Vec3::new(0.0, 1.0, 0.0),
         1.0,
         image.get_aspect_ratio(),
@@ -38,7 +38,7 @@ fn main() {
             + ((*camera.get_u_vector()) * (f64::from(pixel.get_x()) * viewport_incr_x))
             + ((*camera.get_v_vector()) * (f64::from(pixel.get_y()) * viewport_incr_y));
 
-        let ray = Ray::new(*camera.get_position(), pixel_location);
+        let ray = Ray::new(*camera.get_position(), pixel_location - (*camera.get_position()));
 
         let mut smallest_t = f64::MAX;
         for object in &world_objects {
