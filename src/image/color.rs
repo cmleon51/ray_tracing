@@ -82,3 +82,4 @@ impl ops::AddAssign<RGB> for RGB {
         self.blue = self.blue.saturating_add(rhs.blue);
     }
 }
+

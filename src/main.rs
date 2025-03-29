@@ -61,39 +61,56 @@ fn main() {
     )));
     world_lights.push(Box::new(AmbientLight::new(0.2)));
 
+    let pixel_samples = 8;
+    let antialiasing_x_range = -viewport_incr_x..viewport_incr_x;
+    let antialiasing_y_range = -viewport_incr_y..viewport_incr_y;
+
     for pixel in &mut image {
-        let pixel_location = viewport_upper_left
+        let pixel_center = viewport_upper_left
             + ((*camera.get_u_vector()) * (f64::from(pixel.get_x()) * viewport_incr_x))
             + ((*camera.get_v_vector()) * (f64::from(pixel.get_y()) * (viewport_incr_y * -1.0)));
 
-        let ray = Ray::new(
-            *camera.get_position(),
-            pixel_location - (*camera.get_position()),
-        );
+        let mut final_red: u32 = 0;
+        let mut final_green: u32 = 0;
+        let mut final_blue: u32 = 0;
 
-        let mut smallest_t = f64::MAX;
-        for object in &world_objects {
-            let t = object.is_object_hit(&ray);
+        for _ in 0..pixel_samples {
+            let pixel_location = pixel_center + Vec3::new(rand::random_range(antialiasing_x_range.clone()), rand::random_range(antialiasing_y_range.clone()), 0.0);
 
-            if t < smallest_t && t > 0.001 {
-                smallest_t = t;
-                let mut point_color = RGB::new(0, 0, 0);
+            let ray = Ray::new(
+                *camera.get_position(),
+                pixel_location - (*camera.get_position()),
+            );
 
-                // light calculation
-                for light in &world_lights {
-                    point_color += light.compute_color(
-                        &ray,
-                        smallest_t,
-                        (*ray.get_direction()) * -1.0,
-                        object,
-                        &world_objects,
-                        light_bounces,
-                    );
+            let mut smallest_t = f64::MAX;
+            let mut point_color = RGB::new(0, 0, 0);
+            for object in &world_objects {
+                let t = object.is_object_hit(&ray);
+
+                if t < smallest_t && t > 0.001 {
+                    smallest_t = t;
+
+                    // light calculation
+                    for light in &world_lights {
+                        point_color += light.compute_color(
+                            &ray,
+                            smallest_t,
+                            (*ray.get_direction()) * -1.0,
+                            object,
+                            &world_objects,
+                            light_bounces,
+                        );
+                    }
+
                 }
-
-                pixel.change_color(point_color);
             }
+
+            final_red += u32::from(point_color.get_red());
+            final_green += u32::from(point_color.get_green());
+            final_blue += u32::from(point_color.get_blue());
         }
+        
+        pixel.change_color(RGB::new(final_red.saturating_div(pixel_samples) as u8, final_green.saturating_div(pixel_samples) as u8, final_blue.saturating_div(pixel_samples) as u8));
     }
 
     let mut file = match File::create("output.ppm") {
