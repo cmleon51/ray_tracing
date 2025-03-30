@@ -21,7 +21,7 @@ impl Material {
         //};
         let reflectiveness = match reflectiveness {
             None => None,
-            Some(reflectiveness) => Some(reflectiveness.clamp(0.0, 1.0))
+            Some(reflectiveness) => Some(reflectiveness.clamp(0.0, 1.0)),
         };
 
         return Self {

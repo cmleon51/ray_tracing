@@ -1,7 +1,7 @@
 use ray_tracing::image::{Image, RGB};
 use ray_tracing::ray_utils;
 use ray_tracing::world::{
-    AmbientLight, Camera, DirectionalLight, PointLight, Ray, Sphere, Vec3, ViewportAngles, Material
+    AmbientLight, Camera, DirectionalLight, Material, PointLight, Ray, Sphere, Vec3, ViewportAngles,
 };
 use std::fs::File;
 use std::io::prelude::Write;
@@ -28,22 +28,22 @@ fn main() {
     world_objects.push(Box::new(Sphere::new(
         Vec3::new(0.0, -1.0, 3.0),
         1.0,
-        Material::new(RGB::new(255, 0, 0), Some(0.2), Some(500.0))
+        Material::new(RGB::new(255, 0, 0), Some(0.2), Some(500.0)),
     )));
     world_objects.push(Box::new(Sphere::new(
         Vec3::new(2.0, 0.0, 4.0),
         1.0,
-        Material::new(RGB::new(204, 204, 204), Some(1.0), None)
+        Material::new(RGB::new(204, 204, 204), Some(1.0), None),
     )));
     world_objects.push(Box::new(Sphere::new(
         Vec3::new(-2.0, 0.0, 4.0),
         1.0,
-        Material::new(RGB::new(0, 255, 0), Some(1.0), None)
+        Material::new(RGB::new(0, 255, 0), Some(1.0), None),
     )));
     world_objects.push(Box::new(Sphere::new(
         Vec3::new(0.0, -5001.0, 0.0),
         5000.0,
-        Material::new(RGB::new(255, 255, 0), Some(0.5), Some(1000.0))
+        Material::new(RGB::new(255, 255, 0), Some(0.5), Some(1000.0)),
     )));
 
     world_lights.push(Box::new(PointLight::new(Vec3::new(2.0, 1.0, 0.0), 0.6)));
@@ -67,7 +67,12 @@ fn main() {
         let mut final_blue: u32 = 0;
 
         for _ in 0..pixel_samples {
-            let pixel_location = pixel_center + Vec3::new(rand::random_range(antialiasing_x_range.clone()), rand::random_range(antialiasing_y_range.clone()), 0.0);
+            let pixel_location = pixel_center
+                + Vec3::new(
+                    rand::random_range(antialiasing_x_range.clone()),
+                    rand::random_range(antialiasing_y_range.clone()),
+                    0.0,
+                );
 
             let ray = Ray::new(
                 *camera.get_position(),
@@ -93,7 +98,6 @@ fn main() {
                             light_bounces,
                         );
                     }
-
                 }
             }
 
@@ -101,8 +105,12 @@ fn main() {
             final_green += u32::from(point_color.get_green());
             final_blue += u32::from(point_color.get_blue());
         }
-        
-        pixel.change_color(RGB::new(final_red.saturating_div(pixel_samples) as u8, final_green.saturating_div(pixel_samples) as u8, final_blue.saturating_div(pixel_samples) as u8));
+
+        pixel.change_color(RGB::new(
+            final_red.saturating_div(pixel_samples) as u8,
+            final_green.saturating_div(pixel_samples) as u8,
+            final_blue.saturating_div(pixel_samples) as u8,
+        ));
     }
 
     let mut file = match File::create("output.ppm") {

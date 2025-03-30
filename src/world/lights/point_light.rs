@@ -105,14 +105,14 @@ impl Light for PointLight {
                     }
 
                     if let Some(hit_object) = hit_object {
-                            reflected_color = self.compute_color(
-                                &bounce_ray,
-                                smallest_t,
-                                *bounce_ray.get_direction() * -1.0,
-                                hit_object,
-                                other_objects,
-                                light_bounces - 1,
-                            );
+                        reflected_color = self.compute_color(
+                            &bounce_ray,
+                            smallest_t,
+                            *bounce_ray.get_direction() * -1.0,
+                            hit_object,
+                            other_objects,
+                            light_bounces - 1,
+                        );
                     }
 
                     final_color =

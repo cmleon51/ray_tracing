@@ -10,17 +10,13 @@ pub struct Sphere {
     // there is no necessity to have private fields on this object
     position: Vec3,
     radius: f64,
-    material: Material
+    material: Material,
 }
 
 impl Sphere {
     /// function to create a new sphere
     /// even thogh the fields are public i like to have a function to create a new sphere
-    pub fn new(
-        position: Vec3,
-        radius: f64,
-        material: Material
-    ) -> Self {
+    pub fn new(position: Vec3, radius: f64, material: Material) -> Self {
         return Self {
             position,
             radius,
