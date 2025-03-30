@@ -83,12 +83,13 @@ impl Light for DirectionalLight {
 
             let mut final_color = (*material.get_color()) * light_intensity;
 
-            if light_bounces > 0 {
-                if let Some(reflection) = *material.get_reflectiveness() {
+            // even if we don't have light bounces we have to account for the object's
+            // reflectiveness
+            if let Some(reflection) = *material.get_reflectiveness() {
+                let mut reflected_color = RGB::new(0, 0, 0);
+                if light_bounces > 0 {
                     let ray_direction_inverted = (*ray.get_direction()) * -1.0;
                     let ray_reflection = ray_direction_inverted.reflect(&normal);
-
-                    let mut reflected_color = RGB::new(0, 0, 0);
 
                     // we need to find the point and object that our 'ray_reflection' hits
                     let mut smallest_t = f64::MAX;
@@ -105,7 +106,7 @@ impl Light for DirectionalLight {
                     }
 
                     if let Some(hit_object) = hit_object {
-                        reflected_color += self.compute_color(
+                        reflected_color = self.compute_color(
                             &bounce_ray,
                             smallest_t,
                             *bounce_ray.get_direction() * -1.0,
@@ -114,10 +115,8 @@ impl Light for DirectionalLight {
                             light_bounces - 1,
                         );
                     }
-
-                    final_color =
-                        (final_color * (1.0 - reflection)) + (reflected_color * reflection);
                 }
+                final_color = (final_color * (1.0 - reflection)) + (reflected_color * reflection);
             }
 
             return final_color;
