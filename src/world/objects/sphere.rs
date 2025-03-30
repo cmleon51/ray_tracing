@@ -1,4 +1,4 @@
-use super::Object;
+use super::{Material, Object};
 use crate::image::RGB;
 use crate::world::{Ray, Vec3};
 
@@ -10,9 +10,7 @@ pub struct Sphere {
     // there is no necessity to have private fields on this object
     position: Vec3,
     radius: f64,
-    color: RGB,
-    specularity: Option<f64>,
-    reflection: Option<f64>,
+    material: Material
 }
 
 impl Sphere {
@@ -21,16 +19,12 @@ impl Sphere {
     pub fn new(
         position: Vec3,
         radius: f64,
-        color: RGB,
-        specularity: Option<f64>,
-        reflection: Option<f64>,
+        material: Material
     ) -> Self {
         return Self {
             position,
             radius,
-            color,
-            specularity,
-            reflection,
+            material,
         };
     }
 }
@@ -60,15 +54,7 @@ impl Object for Sphere {
         return Some(*((point - self.position).make_unit()));
     }
 
-    fn get_color(&self) -> &RGB {
-        return &self.color;
-    }
-
-    fn get_specularity(&self) -> Option<f64> {
-        return self.specularity;
-    }
-
-    fn get_reflection(&self) -> Option<f64> {
-        return self.reflection;
+    fn get_material(&self) -> &Material {
+        return &(self.material);
     }
 }

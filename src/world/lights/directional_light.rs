@@ -1,6 +1,6 @@
 use crate::image::RGB;
 use crate::world::lights::Light;
-use crate::world::objects::Object;
+use crate::world::objects::{Material, Object};
 use crate::world::{Ray, Vec3};
 
 /// Object abstracting a directional light in space
@@ -33,6 +33,7 @@ impl Light for DirectionalLight {
         light_bounces: u8,
     ) -> RGB {
         let point = ray.calculate_ray_position(t);
+        let material = current_object.get_material();
 
         if let Some(normal) = current_object.get_normal(point) {
             let mut light_intensity = 0.0;
@@ -66,7 +67,7 @@ impl Light for DirectionalLight {
                         / (normal.get_length() * light_direction.get_length()));
             }
 
-            if let Some(specularity) = current_object.get_specularity() {
+            if let Some(specularity) = *material.get_specularity() {
                 if specularity >= 0.0 {
                     let light_reflection = light_direction.reflect(&normal);
                     let light_reflection_point_dot = light_reflection.dot_product(&viewing_vector);
@@ -80,10 +81,10 @@ impl Light for DirectionalLight {
                 }
             }
 
-            let mut final_color = (*current_object.get_color()) * light_intensity;
+            let mut final_color = (*material.get_color()) * light_intensity;
 
             if light_bounces > 0 {
-                if let Some(reflection) = current_object.get_reflection() {
+                if let Some(reflection) = *material.get_reflectiveness() {
                     let ray_direction_inverted = (*ray.get_direction()) * -1.0;
                     let ray_reflection = ray_direction_inverted.reflect(&normal);
 

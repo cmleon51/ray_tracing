@@ -28,9 +28,10 @@ impl Light for AmbientLight {
         light_bounces: u8,
     ) -> RGB {
         let point = ray.calculate_ray_position(t);
+        let material = current_object.get_material();
 
         if let Some(_) = current_object.get_normal(point) {
-            return (*current_object.get_color()) * self.intensity;
+            return (*material.get_color()) * self.intensity;
         }
 
         return RGB::new(0, 0, 0);

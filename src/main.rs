@@ -1,7 +1,7 @@
 use ray_tracing::image::{Image, RGB};
 use ray_tracing::ray_utils;
 use ray_tracing::world::{
-    AmbientLight, Camera, DirectionalLight, PointLight, Ray, Sphere, Vec3, ViewportAngles,
+    AmbientLight, Camera, DirectionalLight, PointLight, Ray, Sphere, Vec3, ViewportAngles, Material
 };
 use std::fs::File;
 use std::io::prelude::Write;
@@ -15,7 +15,7 @@ fn main() {
         Vec3::new(0.0, 0.0, 0.0),
         Vec3::new(0.0, 0.0, 1.0),
         Vec3::new(0.0, 1.0, 0.0),
-        1.0,
+        2.0,
         image.get_aspect_ratio(),
     );
 
@@ -28,30 +28,22 @@ fn main() {
     world_objects.push(Box::new(Sphere::new(
         Vec3::new(0.0, -1.0, 3.0),
         1.0,
-        RGB::new(255, 0, 0),
-        Some(500.0),
-        Some(0.2),
+        Material::new(RGB::new(255, 0, 0), Some(0.2), Some(500.0))
     )));
     world_objects.push(Box::new(Sphere::new(
         Vec3::new(2.0, 0.0, 4.0),
         1.0,
-        RGB::new(0, 0, 255),
-        Some(500.0),
-        Some(0.3),
+        Material::new(RGB::new(204, 204, 204), Some(1.0), None)
     )));
     world_objects.push(Box::new(Sphere::new(
         Vec3::new(-2.0, 0.0, 4.0),
         1.0,
-        RGB::new(0, 255, 0),
-        Some(10.0),
-        Some(0.4),
+        Material::new(RGB::new(0, 255, 0), Some(1.0), None)
     )));
     world_objects.push(Box::new(Sphere::new(
         Vec3::new(0.0, -5001.0, 0.0),
         5000.0,
-        RGB::new(255, 255, 0),
-        Some(1000.0),
-        Some(0.5),
+        Material::new(RGB::new(255, 255, 0), Some(0.5), Some(1000.0))
     )));
 
     world_lights.push(Box::new(PointLight::new(Vec3::new(2.0, 1.0, 0.0), 0.6)));
@@ -59,9 +51,9 @@ fn main() {
         Vec3::new(1.0, 4.0, 4.0),
         0.2,
     )));
-    world_lights.push(Box::new(AmbientLight::new(0.2)));
+    //world_lights.push(Box::new(AmbientLight::new(0.2)));
 
-    let pixel_samples = 8;
+    let pixel_samples = 4;
     let antialiasing_x_range = -viewport_incr_x..viewport_incr_x;
     let antialiasing_y_range = -viewport_incr_y..viewport_incr_y;
 
@@ -87,7 +79,7 @@ fn main() {
             for object in &world_objects {
                 let t = object.is_object_hit(&ray);
 
-                if t < smallest_t && t > 0.001 {
+                if t < smallest_t && t > 1.0 {
                     smallest_t = t;
 
                     // light calculation
