@@ -1,8 +1,8 @@
-use crate::image::RGB;
+use crate::canvas::RGB;
 use crate::world::Ray;
 use crate::world::Vec3;
 use crate::world::lights::Light;
-use crate::world::objects::Object;
+use crate::world::objects::{Object, ObjectRayIntersection};
 
 /// Object abstracting a point light in space
 ///
@@ -14,6 +14,7 @@ pub struct PointLight {
 }
 
 impl PointLight {
+    /// create a new point light
     pub fn new(position: Vec3, intensity: f64) -> Self {
         return Self {
             position,
@@ -25,15 +26,16 @@ impl PointLight {
 impl Light for PointLight {
     fn compute_color(
         &self,
-        ray: &Ray,
-        t: f64,
-        viewing_vector: Vec3,
-        current_object: &Box<dyn Object>,
+        ray_object: &ObjectRayIntersection,
         other_objects: &Vec<Box<dyn Object>>,
         light_bounces: u8,
+        background_color: RGB,
     ) -> RGB {
-        let point = ray.calculate_ray_position(t);
-        let material = current_object.get_material();
+        let point = *ray_object.get_hit_point();
+        let material = ray_object.get_hit_object().get_material();
+        let viewing_vector = ray_object.get_viewing_vector();
+        let current_object  = ray_object.get_hit_object();
+        let ray_direction = ray_object.get_ray().get_direction();
 
         if let Some(normal) = current_object.get_normal(point) {
             let mut light_intensity = 0.0;
@@ -41,21 +43,11 @@ impl Light for PointLight {
 
             // after we get the light direction we need to compute if there are objects in our way
             // between the 'current_object' and the 'other_objects'
-            let mut smallest_t = f64::MAX;
-            let light_length = light_direction.get_length();
             let ray_to_light = Ray::new(point, light_direction);
-            for object in other_objects {
-                let t = object.is_object_hit(&ray_to_light);
+            let light_length = light_direction.get_length();
 
-                // we are checking if the t found for the object is before the light source and
-                // more than the curernt position (have to use .get_length() since in our ray
-                // implementation the direction is normalized)
-                if t < light_length && t > 0.001 && t < smallest_t {
-                    smallest_t = t;
-                }
-            }
-
-            if smallest_t != f64::MAX {
+            if let Some(hit_object) = ObjectRayIntersection::check_intersection(ray_to_light, other_objects,
+                0.001, light_length) {
                 return RGB::new(0, 0, 0);
             }
 
@@ -83,37 +75,77 @@ impl Light for PointLight {
 
             let mut final_color = (*material.get_color()) * light_intensity;
 
-            // even if we don't have light bounces we have to account for the object's
-            // reflectiveness
-            if let Some(reflection) = *material.get_reflectiveness() {
-                let mut reflected_color = RGB::new(0, 0, 0);
-                if light_bounces > 0 {
-                    let ray_direction_inverted = (*ray.get_direction()) * -1.0;
-                    let ray_reflection = ray_direction_inverted.reflect(&normal);
+            // calculate the refraction
+            if let Some(material_refraction) = *material.get_refraction() {
+                // check where the object is coming from (inside the material or outside of it)
+                let ray_normal_dot = ray_direction.dot_product(&normal);
 
-                    // we need to find the point and object that our 'ray_reflection' hits
-                    let mut smallest_t = f64::MAX;
-                    let mut hit_object = None;
-                    let bounce_ray = Ray::new(point, ray_reflection);
+                let refraction_index = if ray_normal_dot < 0.0 {
+                    // we are going into the material
+                    1.0 / material_refraction
+                } else {
+                    material_refraction
+                };
 
-                    for object in other_objects {
-                        let t = object.is_object_hit(&bounce_ray);
+                // checking for "total internal reflection"
+                let internal_reflection_res =
+                    refraction_index * ray_direction.get_angle(&normal).sin();
 
-                        if t > 0.001 && t < smallest_t {
-                            smallest_t = t;
-                            hit_object = Some(object);
+                if internal_reflection_res < 1.0 {
+                    let cos_theta =
+                        f64::min(((*ray_direction) * -1.0).dot_product(&normal), 1.0);
+                    let r_out_perp =
+                        ((*ray_direction) + (normal * cos_theta)) * refraction_index;
+                    let r_out_parallel = normal
+                        * (-(((1.0 - (r_out_perp.get_length() * r_out_perp.get_length())).abs())
+                            .sqrt()));
+
+                    let refracted_direction = r_out_perp + r_out_parallel;
+                    let refracted_ray = Ray::new(point, refracted_direction);
+
+                    // check if the refracted ray hits anything, even if it doesn't we return that
+                    // color
+                    let mut refracted_color = RGB::new(0, 0, 0);
+
+                    if light_bounces > 0 {
+                        if let Some(hit_object) = ObjectRayIntersection::check_intersection(refracted_ray, other_objects,
+                            0.001, f64::MAX){
+                            refracted_color = self.compute_color(
+                                &hit_object,
+                                other_objects,
+                                light_bounces - 1,
+                                background_color,
+                            );
+                        }else {
+                            refracted_color = background_color;
                         }
                     }
 
-                    if let Some(hit_object) = hit_object {
-                        reflected_color = self.compute_color(
-                            &bounce_ray,
-                            smallest_t,
-                            *bounce_ray.get_direction() * -1.0,
-                            hit_object,
+                    return refracted_color;
+                }
+            }
+
+            // even if we don't have light bounces we have to account for the object's
+            // reflectiveness
+            if let Some(reflection) = *material.get_reflectiveness() {
+                let mut reflected_color = RGB::new(0 , 0, 0);
+                if light_bounces > 0 {
+                    let ray_direction_inverted = (*ray_direction) * -1.0;
+                    let ray_reflection = ray_direction_inverted.reflect(&normal);
+
+                    // we need to find the point and object that our 'ray_reflection' hits
+                    let bounce_ray = Ray::new(point, ray_reflection);
+
+                    if let Some(ray_object_intersection) = ObjectRayIntersection::check_intersection(bounce_ray, other_objects,
+                        0.001, f64::MAX) {
+                         reflected_color = self.compute_color(
+                            &ray_object_intersection,
                             other_objects,
                             light_bounces - 1,
+                            background_color,
                         );
+                    }else {
+                        reflected_color = background_color;
                     }
                 }
                 final_color = (final_color * (1.0 - reflection)) + (reflected_color * reflection);
@@ -122,6 +154,7 @@ impl Light for PointLight {
             return final_color;
         }
 
-        return RGB::new(0, 0, 0);
+        // nothing is hit
+        return background_color;
     }
 }

@@ -1,18 +1,17 @@
-use crate::image::RGB;
+use crate::canvas::RGB;
 use crate::world::objects::Object;
-use crate::world::{Ray, Vec3};
+use crate::world::{Ray, Vec3, ObjectRayIntersection};
+use crate::ray_tracer::RayTracer;
 
 /// trough this trait we can implement every type of light we may need for our ray traced world
 pub trait Light {
     /// this function should return the current_object's color at the specified ray and t
     fn compute_color(
         &self,
-        ray: &Ray,
-        t: f64,
-        viewing_vector: Vec3,
-        current_object: &Box<dyn Object>,
+        ray_object: &ObjectRayIntersection,
         other_objects: &Vec<Box<dyn Object>>,
         light_bounces: u8,
+        background_color: RGB,
     ) -> RGB;
 }
 

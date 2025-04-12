@@ -1,7 +1,7 @@
-use crate::image::RGB;
+use crate::canvas::RGB;
 use crate::world::lights::Light;
 use crate::world::objects::Object;
-use crate::world::{Ray, Vec3};
+use crate::world::{Ray, Vec3, ObjectRayIntersection};
 
 /// Object abstracting an ambient light
 ///
@@ -20,17 +20,15 @@ impl AmbientLight {
 impl Light for AmbientLight {
     fn compute_color(
         &self,
-        ray: &Ray,
-        t: f64,
-        viewing_vector: Vec3,
-        current_object: &Box<dyn Object>,
+        ray_object: &ObjectRayIntersection,
         other_objects: &Vec<Box<dyn Object>>,
         light_bounces: u8,
+        background_color: RGB,
     ) -> RGB {
-        let point = ray.calculate_ray_position(t);
-        let material = current_object.get_material();
+        let point = *ray_object.get_hit_point();
+        let material = ray_object.get_hit_object().get_material();
 
-        if let Some(_) = current_object.get_normal(point) {
+        if let Some(_) = ray_object.get_hit_object().get_normal(point) {
             return (*material.get_color()) * self.intensity;
         }
 

@@ -11,6 +11,6 @@ mod vec3;
 
 pub use camera::{Camera, ViewportAngles};
 pub use lights::{AmbientLight, DirectionalLight, Light, PointLight};
-pub use objects::{Material, Object, Sphere};
+pub use objects::{Material, Object, Sphere, ObjectRayIntersection};
 pub use ray::Ray;
 pub use vec3::Vec3;

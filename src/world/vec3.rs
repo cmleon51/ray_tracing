@@ -114,8 +114,13 @@ impl Vec3 {
     }
 
     /// calculates the reflected vector of the first parameter based upon the second one
-    pub fn reflect(&self, respect: &Vec3) -> Vec3 {
+    pub fn reflect(&self, respect: &Vec3) -> Self {
         return (((*respect) * 2.0) * respect.dot_product(self)) - (*self);
+    }
+
+    /// calculates the angle between two vectors
+    pub fn get_angle(&self, other: &Self) -> f64 {
+        return self.dot_product(&other) / (self.get_length() * other.get_length());
     }
 }
 

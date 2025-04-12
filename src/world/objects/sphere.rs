@@ -1,5 +1,5 @@
 use super::{Material, Object};
-use crate::image::RGB;
+use crate::canvas::RGB;
 use crate::world::{Ray, Vec3};
 
 /// object to abstract a sphere in our ray traced world

@@ -1,5 +1,5 @@
 // I'm not sure which version would be better
-use crate::image::RGB;
+use crate::canvas::RGB;
 use crate::world::Ray;
 use crate::world::Vec3;
 //use super::Ray;
@@ -11,14 +11,16 @@ pub struct Material {
     color: RGB,
     reflectiveness: Option<f64>,
     specularity: Option<f64>,
+    refraction: Option<f64>,
 }
 
 impl Material {
-    pub fn new(color: RGB, reflectiveness: Option<f64>, specularity: Option<f64>) -> Self {
-        //let specularity = match specularity {
-        //    None => None,
-        //    Some(specularity) => Some(specularity.clamp(0.0, 1.0))
-        //};
+    pub fn new(
+        color: RGB,
+        reflectiveness: Option<f64>,
+        specularity: Option<f64>,
+        refraction: Option<f64>,
+    ) -> Self {
         let reflectiveness = match reflectiveness {
             None => None,
             Some(reflectiveness) => Some(reflectiveness.clamp(0.0, 1.0)),
@@ -28,6 +30,7 @@ impl Material {
             color,
             reflectiveness,
             specularity,
+            refraction,
         };
     }
 
@@ -44,6 +47,72 @@ impl Material {
     /// retrieves the material's color
     pub fn get_color(&self) -> &RGB {
         return &self.color;
+    }
+
+    /// retrieves the material's refraction index
+    pub fn get_refraction(&self) -> &Option<f64> {
+        return &self.refraction;
+    }
+}
+
+/// An object rappresenting the intersection between an object and a ray
+pub struct ObjectRayIntersection<'a> {
+    ray: Ray,
+    t: f64,
+    viewing_vector: Vec3,
+    object: &'a Box<dyn Object>,
+    object_point: Vec3,    
+}
+
+impl<'a> ObjectRayIntersection<'a> {
+    pub fn new(ray: Ray, t: f64, object: &'a Box<dyn Object>) -> Self {
+        let object_point = ray.calculate_ray_position(t);
+        let viewing_vector = (*ray.get_direction()) * -1.0;
+
+        return Self {
+            ray,
+            t,
+            viewing_vector,
+            object,
+            object_point,
+        };
+    }
+
+    /// this function checks for an interaction between the given ray and the list of world objects
+    pub fn check_intersection(ray: Ray, objects: &'a Vec<Box<dyn Object>>, min_t: f64, max_t: f64) -> Option<Self> {
+        let mut smallest_t = f64::MAX;
+        let mut hit_object: Option<&Box<dyn Object>> = None;
+
+        for object in objects {
+            let t = object.is_object_hit(&ray);
+
+            if t < smallest_t && t > min_t && t < max_t {
+                smallest_t = t;
+                hit_object = Some(object);
+            }
+        }
+
+        if let Some(hit_object) = hit_object {
+            return Some(Self::new(ray, smallest_t, hit_object));
+        }
+
+        return None;
+    }
+
+    pub fn get_hit_point(&self) -> &Vec3 {
+        return &self.object_point;
+    }
+
+    pub fn get_hit_object(&self) -> &Box<dyn Object> {
+        return self.object;
+    }
+
+    pub fn get_viewing_vector(&self) -> &Vec3 {
+        return &self.viewing_vector;
+    }
+
+    pub fn get_ray(&self) -> &Ray {
+        return &self.ray;
     }
 }
 
