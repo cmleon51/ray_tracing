@@ -1,4 +1,4 @@
-use super::vec3::Vec3;
+use crate::world::vec3::Vec3;
 
 /// An Object abstracting the viewport
 ///

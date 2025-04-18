@@ -1,7 +1,7 @@
 use crate::canvas::RGB;
-use crate::world::objects::Object;
-use crate::world::{Ray, Vec3, ObjectRayIntersection};
 use crate::ray_tracer::RayTracer;
+use crate::world::objects::Object;
+use crate::world::{ObjectRayIntersection, Ray, Vec3};
 
 /// trough this trait we can implement every type of light we may need for our ray traced world
 pub trait Light {
@@ -22,6 +22,7 @@ mod directional_light;
 /// module to implement a point light
 mod point_light;
 
+// extracting everything we may need
 pub use ambient_light::AmbientLight;
 pub use directional_light::DirectionalLight;
 pub use point_light::PointLight;

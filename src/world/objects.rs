@@ -1,9 +1,6 @@
-// I'm not sure which version would be better
 use crate::canvas::RGB;
 use crate::world::Ray;
 use crate::world::Vec3;
-//use super::Ray;
-//use super::Vec3;
 
 /// An object rappresenting the material properties of our objects
 #[derive(Debug, Copy, Clone)]
@@ -15,6 +12,7 @@ pub struct Material {
 }
 
 impl Material {
+    /// creates a new Material
     pub fn new(
         color: RGB,
         reflectiveness: Option<f64>,
@@ -61,11 +59,13 @@ pub struct ObjectRayIntersection<'a> {
     t: f64,
     viewing_vector: Vec3,
     object: &'a Box<dyn Object>,
-    object_point: Vec3,    
+    object_point: Vec3,
 }
 
 impl<'a> ObjectRayIntersection<'a> {
-    pub fn new(ray: Ray, t: f64, object: &'a Box<dyn Object>) -> Self {
+    /// creates a new ObjectRayIntersection object, it's a private function since only
+    /// `check_intersection` should be really used
+    fn new(ray: Ray, t: f64, object: &'a Box<dyn Object>) -> Self {
         let object_point = ray.calculate_ray_position(t);
         let viewing_vector = (*ray.get_direction()) * -1.0;
 
@@ -79,16 +79,24 @@ impl<'a> ObjectRayIntersection<'a> {
     }
 
     /// this function checks for an interaction between the given ray and the list of world objects
-    pub fn check_intersection(ray: Ray, objects: &'a Vec<Box<dyn Object>>, min_t: f64, max_t: f64) -> Option<Self> {
+    pub fn check_intersection(
+        ray: Ray,
+        objects: &'a Vec<Box<dyn Object>>,
+        min_t: f64,
+        max_t: f64,
+    ) -> Option<Self> {
         let mut smallest_t = f64::MAX;
         let mut hit_object: Option<&Box<dyn Object>> = None;
 
         for object in objects {
-            let t = object.is_object_hit(&ray);
-
-            if t < smallest_t && t > min_t && t < max_t {
-                smallest_t = t;
-                hit_object = Some(object);
+            match object.is_object_hit(&ray) {
+                Some(t) => {
+                    if t < smallest_t && t > min_t && t < max_t {
+                        smallest_t = t;
+                        hit_object = Some(object);
+                    }
+                },
+                None => ()
             }
         }
 
@@ -99,18 +107,22 @@ impl<'a> ObjectRayIntersection<'a> {
         return None;
     }
 
+    /// returns the point at which the object has been hit
     pub fn get_hit_point(&self) -> &Vec3 {
         return &self.object_point;
     }
 
+    /// returns the hit object
     pub fn get_hit_object(&self) -> &Box<dyn Object> {
         return self.object;
     }
 
+    /// returns the vector that points from the `hit point` to the ray's starting position
     pub fn get_viewing_vector(&self) -> &Vec3 {
         return &self.viewing_vector;
     }
 
+    /// retrieves the ray
     pub fn get_ray(&self) -> &Ray {
         return &self.ray;
     }
@@ -120,7 +132,7 @@ impl<'a> ObjectRayIntersection<'a> {
 pub trait Object {
     /// this method should do all of the necessary calculations to check if a ray hits an object
     /// and return the `t` ray parameter that is closest to the ray
-    fn is_object_hit(&self, ray: &Ray) -> f64;
+    fn is_object_hit(&self, ray: &Ray) -> Option<f64>;
 
     /// this method should retun a unit vector of the normal of the object based upon a point in
     /// space that is on the surface of the object (the value could be None if the point given is
@@ -129,19 +141,12 @@ pub trait Object {
 
     /// this methos should return the object's material
     fn get_material(&self) -> &Material;
-
-    ///// this method should return the color of the object
-    //fn get_color(&self) -> &RGB;
-    //
-    ///// this methos should return the specularity of the current object
-    //fn get_specularity(&self) -> Option<f64>;
-    //
-    ///// this method should return the reflection of the current object
-    //fn get_reflection(&self) -> Option<f64>;
 }
 
-/// module implementing a sphere in our ray traced world
+/// modules implementing various objects
 mod sphere;
+mod triangle;
 
-// TODO: find a better way to extract the modules for the lib or create a function for every object
+// extracting everything we may need
 pub use sphere::Sphere;
+pub use triangle::Triangle;

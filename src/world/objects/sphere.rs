@@ -26,7 +26,7 @@ impl Sphere {
 }
 
 impl Object for Sphere {
-    fn is_object_hit(&self, ray: &Ray) -> f64 {
+    fn is_object_hit(&self, ray: &Ray) -> Option<f64> {
         let oc = (*ray.get_position()) - self.position;
         let a = ray.get_direction().dot_product(ray.get_direction()); // should always be one
         // but who knows
@@ -34,10 +34,14 @@ impl Object for Sphere {
         let c = oc.dot_product(&oc) - (self.radius * self.radius);
         let discriminant = b * b - 4.0 * a * c;
 
+        if discriminant < 0.0 {
+            return None;
+        }
+
         let t1 = (-b + discriminant.sqrt()) / (2.0 * a);
         let t2 = (-b - discriminant.sqrt()) / (2.0 * a);
 
-        return f64::min(t1, t2); // i think that the syntax is more readable like this
+        return Some(f64::min(t1, t2)); // i think that the syntax is more readable like this
     }
 
     // TODO: check if the point is inside of the sphere in a better way since we have to account

@@ -9,8 +9,9 @@ mod ray;
 /// module implementing the Vec3 struct and all of the math behind it
 mod vec3;
 
+// extracting everything that is useful
 pub use camera::{Camera, ViewportAngles};
 pub use lights::{AmbientLight, DirectionalLight, Light, PointLight};
-pub use objects::{Material, Object, Sphere, ObjectRayIntersection};
+pub use objects::{Material, Object, ObjectRayIntersection, Sphere, Triangle};
 pub use ray::Ray;
 pub use vec3::Vec3;

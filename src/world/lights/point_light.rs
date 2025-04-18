@@ -34,7 +34,7 @@ impl Light for PointLight {
         let point = *ray_object.get_hit_point();
         let material = ray_object.get_hit_object().get_material();
         let viewing_vector = ray_object.get_viewing_vector();
-        let current_object  = ray_object.get_hit_object();
+        let current_object = ray_object.get_hit_object();
         let ray_direction = ray_object.get_ray().get_direction();
 
         if let Some(normal) = current_object.get_normal(point) {
@@ -46,8 +46,12 @@ impl Light for PointLight {
             let ray_to_light = Ray::new(point, light_direction);
             let light_length = light_direction.get_length();
 
-            if let Some(hit_object) = ObjectRayIntersection::check_intersection(ray_to_light, other_objects,
-                0.001, light_length) {
+            if let Some(hit_object) = ObjectRayIntersection::check_intersection(
+                ray_to_light,
+                other_objects,
+                0.001,
+                light_length,
+            ) {
                 return RGB::new(0, 0, 0);
             }
 
@@ -92,10 +96,8 @@ impl Light for PointLight {
                     refraction_index * ray_direction.get_angle(&normal).sin();
 
                 if internal_reflection_res < 1.0 {
-                    let cos_theta =
-                        f64::min(((*ray_direction) * -1.0).dot_product(&normal), 1.0);
-                    let r_out_perp =
-                        ((*ray_direction) + (normal * cos_theta)) * refraction_index;
+                    let cos_theta = f64::min(((*ray_direction) * -1.0).dot_product(&normal), 1.0);
+                    let r_out_perp = ((*ray_direction) + (normal * cos_theta)) * refraction_index;
                     let r_out_parallel = normal
                         * (-(((1.0 - (r_out_perp.get_length() * r_out_perp.get_length())).abs())
                             .sqrt()));
@@ -108,15 +110,19 @@ impl Light for PointLight {
                     let mut refracted_color = RGB::new(0, 0, 0);
 
                     if light_bounces > 0 {
-                        if let Some(hit_object) = ObjectRayIntersection::check_intersection(refracted_ray, other_objects,
-                            0.001, f64::MAX){
+                        if let Some(hit_object) = ObjectRayIntersection::check_intersection(
+                            refracted_ray,
+                            other_objects,
+                            0.001,
+                            f64::MAX,
+                        ) {
                             refracted_color = self.compute_color(
                                 &hit_object,
                                 other_objects,
                                 light_bounces - 1,
                                 background_color,
                             );
-                        }else {
+                        } else {
                             refracted_color = background_color;
                         }
                     }
@@ -128,7 +134,7 @@ impl Light for PointLight {
             // even if we don't have light bounces we have to account for the object's
             // reflectiveness
             if let Some(reflection) = *material.get_reflectiveness() {
-                let mut reflected_color = RGB::new(0 , 0, 0);
+                let mut reflected_color = RGB::new(0, 0, 0);
                 if light_bounces > 0 {
                     let ray_direction_inverted = (*ray_direction) * -1.0;
                     let ray_reflection = ray_direction_inverted.reflect(&normal);
@@ -136,15 +142,19 @@ impl Light for PointLight {
                     // we need to find the point and object that our 'ray_reflection' hits
                     let bounce_ray = Ray::new(point, ray_reflection);
 
-                    if let Some(ray_object_intersection) = ObjectRayIntersection::check_intersection(bounce_ray, other_objects,
-                        0.001, f64::MAX) {
-                         reflected_color = self.compute_color(
+                    if let Some(ray_object_intersection) = ObjectRayIntersection::check_intersection(
+                        bounce_ray,
+                        other_objects,
+                        0.001,
+                        f64::MAX,
+                    ) {
+                        reflected_color = self.compute_color(
                             &ray_object_intersection,
                             other_objects,
                             light_bounces - 1,
                             background_color,
                         );
-                    }else {
+                    } else {
                         reflected_color = background_color;
                     }
                 }

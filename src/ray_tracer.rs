@@ -3,7 +3,7 @@ use crate::world::*;
 
 pub struct RayTracer {
     camera: Camera,
-    pub canvas: Canvas,
+    canvas: Canvas,
     background_color: RGB, // until a skybox is implemented the "sky" will be a background color
     viewport_incr_x: f64,
     viewport_incr_y: f64,
@@ -58,20 +58,23 @@ impl RayTracer {
         return self;
     }
 
-    /// this functions traces a ray between the starting and end position, it returns an RGB color
-    pub fn trace_ray(
-        &self,
-        starting_position: Vec3,
-        end_position: Vec3,
-    ) -> RGB {
+    /// this functions traces a ray between the starting and end position, returning an RGB color
+    pub fn trace_ray(&self, starting_position: Vec3, end_position: Vec3) -> RGB {
         let mut hit_color = self.background_color;
         let ray = Ray::new(starting_position, end_position - starting_position);
 
-        if let Some(object_intersection) = ObjectRayIntersection::check_intersection(ray, &self.objects, 1.0, f64::MAX) {
+        if let Some(object_intersection) =
+            ObjectRayIntersection::check_intersection(ray, &self.objects, 1.0, f64::MAX)
+        {
             hit_color = RGB::new(0, 0, 0);
 
             for light in &self.lights {
-                hit_color += light.compute_color(&object_intersection, &self.objects, 3, self.background_color);
+                hit_color += light.compute_color(
+                    &object_intersection,
+                    &self.objects,
+                    3,
+                    self.background_color,
+                );
             }
         }
 
@@ -97,24 +100,8 @@ impl RayTracer {
         self.canvas = std::mem::take(&mut canvas);
     }
 
-    // TODO: remove function
-    // fn check_for_objects(&self, ray: Ray) -> Option<ObjectRayIntersection> {
-    //     let mut smallest_t = f64::MAX;
-    //     let mut hit_object: Option<&Box<dyn Object>> = None;
-    //
-    //     for object in &self.objects {
-    //         let t = object.is_object_hit(&ray);
-    //
-    //         if t < smallest_t && t > 1.0 {
-    //             smallest_t = t;
-    //             hit_object = Some(object);
-    //         }
-    //     }
-    //
-    //     if let Some(hit_object) = hit_object {
-    //         return Some(ObjectRayIntersection::new(ray, smallest_t, hit_object));
-    //     }
-    //
-    //     return None;
-    // }
+    /// this function returns the "canvas"
+    pub fn get_canvas(&self) -> &Canvas {
+        return &self.canvas;
+    }
 }

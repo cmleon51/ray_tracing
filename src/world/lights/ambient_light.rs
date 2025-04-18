@@ -1,7 +1,7 @@
 use crate::canvas::RGB;
 use crate::world::lights::Light;
 use crate::world::objects::Object;
-use crate::world::{Ray, Vec3, ObjectRayIntersection};
+use crate::world::{ObjectRayIntersection, Ray, Vec3};
 
 /// Object abstracting an ambient light
 ///
