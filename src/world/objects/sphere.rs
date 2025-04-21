@@ -1,3 +1,5 @@
+use std::f64;
+
 use super::{Material, Object};
 use crate::canvas::RGB;
 use crate::world::{Ray, Vec3};
@@ -56,5 +58,23 @@ impl Object for Sphere {
 
     fn get_material(&self) -> &Material {
         return &(self.material);
+    }
+
+    fn get_color(&self, point: Vec3) -> RGB {
+        let mut final_color = *self.material.get_color();
+
+        if let Some(texture) = self.material.get_texture() {
+            let mut point_to_center = point - self.position;
+            point_to_center.make_unit();
+
+            let u = 0.5
+                + (f64::atan2(*point_to_center.get_z(), *point_to_center.get_x())
+                    / (2.0 * f64::consts::PI));
+            let v = 0.5 - (f64::asin(*point_to_center.get_y()) / f64::consts::PI);
+
+            final_color += texture.get_color(u, v);
+        }
+
+        return final_color;
     }
 }

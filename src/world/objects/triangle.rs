@@ -66,4 +66,8 @@ impl Object for Triangle {
     fn get_material(&self) -> &Material {
         return &(self.material);
     }
+
+    fn get_color(&self, point: Vec3) -> RGB {
+        return *self.get_material().get_color();
+    }
 }

@@ -1,57 +1,7 @@
 use crate::canvas::RGB;
+use crate::world::Material;
 use crate::world::Ray;
 use crate::world::Vec3;
-
-/// An object rappresenting the material properties of our objects
-#[derive(Debug, Copy, Clone)]
-pub struct Material {
-    color: RGB,
-    reflectiveness: Option<f64>,
-    specularity: Option<f64>,
-    refraction: Option<f64>,
-}
-
-impl Material {
-    /// creates a new Material
-    pub fn new(
-        color: RGB,
-        reflectiveness: Option<f64>,
-        specularity: Option<f64>,
-        refraction: Option<f64>,
-    ) -> Self {
-        let reflectiveness = match reflectiveness {
-            None => None,
-            Some(reflectiveness) => Some(reflectiveness.clamp(0.0, 1.0)),
-        };
-
-        return Self {
-            color,
-            reflectiveness,
-            specularity,
-            refraction,
-        };
-    }
-
-    /// retrieves the material's specularity value
-    pub fn get_specularity(&self) -> &Option<f64> {
-        return &self.specularity;
-    }
-
-    /// retrieves the material's reflectiveness
-    pub fn get_reflectiveness(&self) -> &Option<f64> {
-        return &self.reflectiveness;
-    }
-
-    /// retrieves the material's color
-    pub fn get_color(&self) -> &RGB {
-        return &self.color;
-    }
-
-    /// retrieves the material's refraction index
-    pub fn get_refraction(&self) -> &Option<f64> {
-        return &self.refraction;
-    }
-}
 
 /// An object rappresenting the intersection between an object and a ray
 pub struct ObjectRayIntersection<'a> {
@@ -95,8 +45,8 @@ impl<'a> ObjectRayIntersection<'a> {
                         smallest_t = t;
                         hit_object = Some(object);
                     }
-                },
-                None => ()
+                }
+                None => (),
             }
         }
 
@@ -141,6 +91,9 @@ pub trait Object {
 
     /// this methos should return the object's material
     fn get_material(&self) -> &Material;
+
+    /// this method should return the color of the sphere at the specified point
+    fn get_color(&self, point: Vec3) -> RGB;
 }
 
 /// modules implementing various objects

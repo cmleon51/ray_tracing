@@ -1,7 +1,5 @@
 use crate::canvas::RGB;
-use crate::world::lights::Light;
-use crate::world::objects::Object;
-use crate::world::{ObjectRayIntersection, Ray, Vec3};
+use crate::world::{Light, Object, ObjectRayIntersection, Ray, Vec3};
 
 /// Object abstracting an ambient light
 ///
@@ -27,9 +25,10 @@ impl Light for AmbientLight {
     ) -> RGB {
         let point = *ray_object.get_hit_point();
         let material = ray_object.get_hit_object().get_material();
+        let object_color = ray_object.get_hit_object().get_color(point);
 
         if let Some(_) = ray_object.get_hit_object().get_normal(point) {
-            return (*material.get_color()) * self.intensity;
+            return (object_color) * self.intensity;
         }
 
         return RGB::new(0, 0, 0);

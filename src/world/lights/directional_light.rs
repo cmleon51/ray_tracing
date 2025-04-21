@@ -1,7 +1,5 @@
 use crate::canvas::RGB;
-use crate::world::lights::Light;
-use crate::world::objects::{Material, Object};
-use crate::world::{ObjectRayIntersection, Ray, Vec3};
+use crate::world::{Light, Object, ObjectRayIntersection, Ray, Vec3};
 
 /// Object abstracting a directional light in space
 ///
@@ -39,6 +37,7 @@ impl Light for DirectionalLight {
         if let Some(normal) = current_object.get_normal(point) {
             let mut light_intensity = 0.0;
             let light_direction = self.direction;
+            let object_color = ray_object.get_hit_object().get_color(point);
 
             // after we get the light direction we need to compute if there are objects in our way
             // between the 'current_object' and the 'other_objects'
@@ -78,7 +77,7 @@ impl Light for DirectionalLight {
                 }
             }
 
-            let mut final_color = (*material.get_color()) * light_intensity;
+            let mut final_color = (object_color) * light_intensity;
 
             // calculate the refraction
             if let Some(material_refraction) = *material.get_refraction() {
