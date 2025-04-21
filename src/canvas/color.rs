@@ -68,9 +68,9 @@ impl ops::Add<RGB> for RGB {
 
     fn add(self, rhs: Self) -> Self::Output {
         return RGB::new(
-            self.red + rhs.red,
-            self.green + rhs.green,
-            self.blue + rhs.blue,
+            self.red.saturating_add(rhs.red),
+            self.green.saturating_add(rhs.green),
+            self.blue.saturating_add(rhs.blue),
         );
     }
 }

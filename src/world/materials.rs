@@ -27,6 +27,7 @@ use texture::Texture;
 ///         Some(0.8),
 ///         None,
 ///         None,
+///         None,
 ///     );
 ///
 ///     println!("Color: {:?}", material.get_color());
@@ -34,6 +35,7 @@ use texture::Texture;
 ///     println!("Reflectiveness: {:?}", material.get_reflectiveness());
 ///     println!("Specularity: {:?}", material.get_specularity());
 ///     println!("Refraction: {:?}", material.get_refraction());
+///     println!("Transparency: {:?}", material.get_transparency());
 /// }
 /// ```
 #[derive(Debug, Clone)]
@@ -43,6 +45,7 @@ pub struct Material {
     reflectiveness: Option<f64>,
     specularity: Option<f64>,
     refraction: Option<f64>,
+    transparency: Option<f64>,
 }
 
 impl Material {
@@ -53,6 +56,7 @@ impl Material {
         reflectiveness: Option<f64>,
         specularity: Option<f64>,
         refraction: Option<f64>,
+        transparency: Option<f64>,
     ) -> Self {
         let reflectiveness = match reflectiveness {
             None => None,
@@ -63,12 +67,23 @@ impl Material {
             None => None,
         };
 
+        // if we have refraction then trasparency will be full only when `transparency` is not
+        // given
+        let transparency = if let Some(transparency) = transparency {
+            Some(transparency.clamp(0.0, 1.0))
+        } else if let Some(refraction) = refraction {
+            Some(1.0)
+        } else {
+            None
+        };
+
         return Self {
             color,
             texture,
             reflectiveness,
             specularity,
             refraction,
+            transparency,
         };
     }
 
@@ -95,5 +110,10 @@ impl Material {
     /// retrieves the material's refraction index
     pub fn get_refraction(&self) -> &Option<f64> {
         return &self.refraction;
+    }
+
+    /// retrieve the material's transparency level
+    pub fn get_transparency(&self) -> &Option<f64> {
+        return &self.transparency;
     }
 }

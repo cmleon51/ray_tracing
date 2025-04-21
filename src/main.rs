@@ -18,7 +18,14 @@ fn main() {
     ray_tracer.add_object(Box::new(Sphere::new(
         Vec3::new(0.0, -5001.0, 0.0),
         5000.0,
-        Material::new(RGB::new(255, 255, 255), None, Some(0.8), Some(300.0), None),
+        Material::new(
+            RGB::new(255, 255, 255),
+            None,
+            Some(0.8),
+            Some(300.0),
+            None,
+            None,
+        ),
     )));
     ray_tracer.add_object(Box::new(Sphere::new(
         Vec3::new(0.0, 0.0, 4.0),
@@ -26,6 +33,7 @@ fn main() {
         Material::new(
             RGB::new(0, 0, 0),
             Some("./textures/earthmap.jpg"),
+            None,
             None,
             None,
             None,

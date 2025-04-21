@@ -128,7 +128,11 @@ impl Light for DirectionalLight {
                         }
                     }
 
-                    return refracted_color;
+                    if let Some(transparency) = *material.get_transparency() {
+                        final_color = final_color * (1.0 - transparency);
+                    }
+
+                    return refracted_color + final_color;
                 }
             }
 
