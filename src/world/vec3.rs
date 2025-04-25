@@ -122,6 +122,11 @@ impl Vec3 {
     pub fn get_angle(&self, other: &Self) -> f64 {
         return self.dot_product(&other) / (self.get_length() * other.get_length());
     }
+
+    /// inverts the current vector and returns a new one
+    pub fn get_inverse(&self) -> Self {
+        return (*self) * -1.0;
+    }
 }
 
 impl ops::Mul<f64> for Vec3 {

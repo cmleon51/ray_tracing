@@ -94,7 +94,7 @@ impl Light for PointLight {
                     refraction_index * ray_direction.get_angle(&normal).sin();
 
                 if internal_reflection_res < 1.0 {
-                    let cos_theta = f64::min(((*ray_direction) * -1.0).dot_product(&normal), 1.0);
+                    let cos_theta = f64::min((ray_direction.get_inverse()).dot_product(&normal), 1.0);
                     let r_out_perp = ((*ray_direction) + (normal * cos_theta)) * refraction_index;
                     let r_out_parallel = normal
                         * (-(((1.0 - (r_out_perp.get_length() * r_out_perp.get_length())).abs())
@@ -138,8 +138,7 @@ impl Light for PointLight {
             if let Some(reflection) = *material.get_reflectiveness() {
                 let mut reflected_color = RGB::new(0, 0, 0);
                 if light_bounces > 0 {
-                    let ray_direction_inverted = (*ray_direction) * -1.0;
-                    let ray_reflection = ray_direction_inverted.reflect(&normal);
+                    let ray_reflection = ray_direction.get_inverse().reflect(&normal);
 
                     // we need to find the point and object that our 'ray_reflection' hits
                     let bounce_ray = Ray::new(point, ray_reflection);

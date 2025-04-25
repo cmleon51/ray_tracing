@@ -17,7 +17,7 @@ impl<'a> ObjectRayIntersection<'a> {
     /// `check_intersection` should be really used
     fn new(ray: Ray, t: f64, object: &'a Box<dyn Object>) -> Self {
         let object_point = ray.calculate_ray_position(t);
-        let viewing_vector = (*ray.get_direction()) * -1.0;
+        let viewing_vector = ray.get_direction().get_inverse();
 
         return Self {
             ray,
