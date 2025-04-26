@@ -100,6 +100,27 @@ impl Vec3 {
         return self;
     }
 
+    /// adds the given value to x
+    pub fn add_x(&mut self, add_x: f64) -> &mut Self {
+        self.x += add_x;
+
+        return self;
+    }
+
+    /// adds the given value to y
+    pub fn add_y(&mut self, add_y: f64) -> &mut Self {
+        self.y += add_y;
+
+        return self;
+    }
+
+    /// adds the given value to z
+    pub fn add_z(&mut self, add_z: f64) -> &mut Self {
+        self.z += add_z;
+
+        return self;
+    }
+
     /// retrieves the vector's magnitude (length)
     pub fn get_length(&self) -> f64 {
         return self.dot_product(self).sqrt();
@@ -166,6 +187,14 @@ impl ops::Add<Vec3> for Vec3 {
 
     fn add(self, rhs: Self) -> Self::Output {
         return Self::new(self.x + rhs.x, self.y + rhs.y, self.z + rhs.z);
+    }
+}
+
+impl ops::AddAssign for Vec3 {
+    fn add_assign(&mut self, rhs: Self) {
+        self.x += rhs.x;
+        self.y += rhs.y;
+        self.z += rhs.z;
     }
 }
 

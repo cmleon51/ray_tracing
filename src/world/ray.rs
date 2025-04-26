@@ -1,3 +1,5 @@
+use std::ops::Range;
+
 use super::vec3::Vec3;
 
 /// An Object abstracting a Ray in 3d space
@@ -61,5 +63,31 @@ impl Ray {
     /// retrieves a immutable reference to a ray's direction
     pub fn get_direction(&self) -> &Vec3 {
         return &self.direction;
+    }
+
+    /// scatters the ray's direction into the given x, y and z range
+    pub fn scatter(
+        &mut self,
+        x_range: Option<Range<f64>>,
+        y_range: Option<Range<f64>>,
+        z_range: Option<Range<f64>>,
+    ) -> &mut Self {
+        let mut scatter_vector = Vec3::new(0.0, 0.0, 0.0);
+
+        if let Some(range) = x_range {
+            scatter_vector.add_x(rand::random_range(range));
+        }
+
+        if let Some(range) = y_range {
+            scatter_vector.add_y(rand::random_range(range));
+        }
+
+        if let Some(range) = z_range {
+            scatter_vector.add_z(rand::random_range(range));
+        }
+
+        self.direction += scatter_vector;
+
+        return self;
     }
 }

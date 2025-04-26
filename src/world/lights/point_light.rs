@@ -94,7 +94,8 @@ impl Light for PointLight {
                     refraction_index * ray_direction.get_angle(&normal).sin();
 
                 if internal_reflection_res < 1.0 {
-                    let cos_theta = f64::min((ray_direction.get_inverse()).dot_product(&normal), 1.0);
+                    let cos_theta =
+                        f64::min((ray_direction.get_inverse()).dot_product(&normal), 1.0);
                     let r_out_perp = ((*ray_direction) + (normal * cos_theta)) * refraction_index;
                     let r_out_parallel = normal
                         * (-(((1.0 - (r_out_perp.get_length() * r_out_perp.get_length())).abs())

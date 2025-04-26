@@ -9,10 +9,11 @@ fn main() {
         Vec3::new(0.0, 0.0, 0.0),
         Vec3::new(0.0, 0.0, 1.0),
         Vec3::new(0.0, 1.0, 0.0),
-        600,
-        600,
+        1200,
+        1200,
         RGB::new(53, 81, 92),
         2.0,
+        8,
     );
 
     ray_tracer.add_object(Box::new(Sphere::new(

@@ -82,3 +82,15 @@ impl ops::AddAssign<RGB> for RGB {
         self.blue = self.blue.saturating_add(rhs.blue);
     }
 }
+
+impl ops::Div<u8> for RGB {
+    type Output = RGB;
+
+    fn div(self, rhs: u8) -> Self::Output {
+        return RGB::new(
+            self.red.saturating_div(rhs),
+            self.green.saturating_div(rhs),
+            self.blue.saturating_div(rhs),
+        );
+    }
+}

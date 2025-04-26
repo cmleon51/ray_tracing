@@ -9,6 +9,7 @@ pub struct RayTracer {
     viewport_incr_y: f64,
     objects: Vec<Box<dyn Object>>,
     lights: Vec<Box<dyn Light>>,
+    pixel_samples: u32,
 }
 
 impl RayTracer {
@@ -21,6 +22,7 @@ impl RayTracer {
         canvas_height: u32,
         background_color: RGB,
         viewport_width: f64,
+        pixel_samples: u32,
     ) -> Self {
         let canvas = Canvas::new(canvas_width, canvas_height, background_color);
         let camera = Camera::new(
@@ -41,6 +43,7 @@ impl RayTracer {
             viewport_incr_y,
             objects: vec![],
             lights: vec![],
+            pixel_samples,
         };
     }
 
@@ -60,25 +63,46 @@ impl RayTracer {
 
     /// this functions traces a ray between the starting and end position, returning an RGB color
     pub fn trace_ray(&self, starting_position: Vec3, end_position: Vec3) -> RGB {
-        let mut hit_color = self.background_color;
-        let ray = Ray::new(starting_position, end_position - starting_position);
+        let mut final_red: u32 = 0;
+        let mut final_green: u32 = 0;
+        let mut final_blue: u32 = 0;
 
-        if let Some(object_intersection) =
-            ObjectRayIntersection::check_intersection(ray, &self.objects, 1.0, f64::MAX)
-        {
-            hit_color = RGB::new(0, 0, 0);
+        for _ in 0..self.pixel_samples {
+            let mut ray = Ray::new(starting_position, end_position - starting_position);
+            ray.scatter(
+                Some(-self.viewport_incr_x..self.viewport_incr_x),
+                Some(-self.viewport_incr_y..self.viewport_incr_y),
+                None,
+            );
 
-            for light in &self.lights {
-                hit_color += light.compute_color(
-                    &object_intersection,
-                    &self.objects,
-                    3,
-                    self.background_color,
-                );
+            if let Some(object_intersection) =
+                ObjectRayIntersection::check_intersection(ray, &self.objects, 1.0, f64::MAX)
+            {
+                for light in &self.lights {
+                    let hit_color = light.compute_color(
+                        &object_intersection,
+                        &self.objects,
+                        3,
+                        self.background_color,
+                    );
+
+                    final_red = final_red.saturating_add(u32::from(hit_color.get_red()));
+                    final_green = final_green.saturating_add(u32::from(hit_color.get_green()));
+                    final_blue = final_blue.saturating_add(u32::from(hit_color.get_blue()));
+                }
+            } else {
+                final_red = final_red.saturating_add(u32::from(self.background_color.get_red()));
+                final_green =
+                    final_green.saturating_add(u32::from(self.background_color.get_green()));
+                final_blue = final_blue.saturating_add(u32::from(self.background_color.get_blue()));
             }
         }
 
-        return hit_color;
+        return RGB::new(
+            final_red.saturating_div(self.pixel_samples) as u8,
+            final_green.saturating_div(self.pixel_samples) as u8,
+            final_blue.saturating_div(self.pixel_samples) as u8,
+        );
     }
 
     /// this function renders the image on the "canvas"
