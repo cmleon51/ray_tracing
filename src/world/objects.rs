@@ -96,12 +96,12 @@ pub trait Object {
     fn get_color(&self, point: Vec3) -> RGB;
 }
 
+mod panel;
 /// modules implementing various objects
 mod sphere;
 mod triangle;
-mod panel;
 
 // extracting everything we may need
+pub use panel::Panel;
 pub use sphere::Sphere;
 pub use triangle::Triangle;
-pub use panel::Panel;

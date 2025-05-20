@@ -16,4 +16,6 @@ mod ray_tracer;
 // extract everything that is needed to create the ray tracing
 pub use canvas::RGB;
 pub use ray_tracer::RayTracer;
-pub use world::{AmbientLight, DirectionalLight, Material, PointLight, Sphere, Triangle, Panel, Vec3};
+pub use world::{
+    AmbientLight, DirectionalLight, Material, Panel, PointLight, Sphere, Triangle, Vec3,
+};

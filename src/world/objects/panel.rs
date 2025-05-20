@@ -12,7 +12,7 @@ struct BoundingBox {
     top_right: Vec3,
     top_left: Vec3,
     bottom_right: Vec3,
-    bottom_left: Vec3
+    bottom_left: Vec3,
 }
 
 impl BoundingBox {
@@ -53,12 +53,18 @@ pub struct Panel {
 }
 
 impl Panel {
-    pub fn new(panel_origin: Vec3, panel_normal: Vec3, panel_width: f64, panel_height: f64, material: Material) -> Self {
+    pub fn new(
+        panel_origin: Vec3,
+        panel_normal: Vec3,
+        panel_width: f64,
+        panel_height: f64,
+        material: Material,
+    ) -> Self {
         return Self {
             panel_origin,
             panel_normal,
             bounding_box: BoundingBox::new(panel_origin, panel_width, panel_height),
-            material
+            material,
         };
     }
 }
@@ -72,11 +78,15 @@ impl Object for Panel {
             return None;
         }
 
-        let t = ((self.panel_origin - (*ray.get_direction())).dot_product(&panel_normal)) / discriminant;
+        let t = ((self.panel_origin - (*ray.get_direction())).dot_product(&panel_normal))
+            / discriminant;
 
         // it's certinately not the best way to check if a ray is inside the width and height of
         // the box but it's the one i've come up with
-        if !self.bounding_box.is_vec_inside(ray.calculate_ray_position(t)){
+        if !self
+            .bounding_box
+            .is_vec_inside(ray.calculate_ray_position(t))
+        {
             return None;
         }
 
