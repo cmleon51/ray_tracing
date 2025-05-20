@@ -99,7 +99,9 @@ pub trait Object {
 /// modules implementing various objects
 mod sphere;
 mod triangle;
+mod panel;
 
 // extracting everything we may need
 pub use sphere::Sphere;
 pub use triangle::Triangle;
+pub use panel::Panel;
