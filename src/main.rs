@@ -1,6 +1,8 @@
 use ray_tracing::RGB;
 use ray_tracing::RayTracer;
-use ray_tracing::{AmbientLight, DirectionalLight, Material, PointLight, Sphere, Triangle, Vec3};
+use ray_tracing::{
+    AmbientLight, DirectionalLight, Material, Panel, PointLight, Sphere, Triangle, Vec3,
+};
 use std::fs::File;
 use std::io::prelude::Write;
 
@@ -13,7 +15,7 @@ fn main() {
         1200,
         RGB::new(53, 81, 92),
         2.0,
-        8,
+        1,
     );
 
     ray_tracer.add_object(Box::new(Sphere::new(
@@ -29,7 +31,7 @@ fn main() {
         ),
     )));
     ray_tracer.add_object(Box::new(Sphere::new(
-        Vec3::new(0.0, 0.0, 4.0),
+        Vec3::new(0.0, 0.5, 4.0),
         1.0,
         Material::new(
             RGB::new(0, 0, 0),
@@ -40,8 +42,16 @@ fn main() {
             None,
         ),
     )));
+    ray_tracer.add_object(Box::new(Panel::new(
+        Vec3::new(1.5, 0.0, 4.0),
+        Vec3::new(-1.0, 0.0, 0.0),
+        1.0,
+        2.0,
+        Material::new(RGB::new(0, 255, 0), None, Some(0.9), None, None, None),
+    )));
 
-    ray_tracer.add_light(Box::new(PointLight::new(Vec3::new(0.0, 2.0, 0.0), 1.0)));
+    ray_tracer.add_light(Box::new(PointLight::new(Vec3::new(0.0, 2.0, 0.0), 0.8)));
+    ray_tracer.add_light(Box::new(AmbientLight::new(0.2)));
 
     ray_tracer.render();
 
