@@ -15,24 +15,27 @@ fn main() {
         1200,
         RGB::new(53, 81, 92),
         2.0,
-        1,
+        2,
     );
 
+    // blue right sphere
     ray_tracer.add_object(Box::new(Sphere::new(
-        Vec3::new(0.0, -5001.0, 0.0),
-        5000.0,
-        Material::new(
-            RGB::new(255, 255, 255),
-            None,
-            Some(0.8),
-            Some(300.0),
-            None,
-            None,
-        ),
-    )));
-    ray_tracer.add_object(Box::new(Sphere::new(
-        Vec3::new(0.0, 0.5, 4.0),
+        Vec3::new(1.3, -1.5, 5.0),
         1.0,
+        Material::new(RGB::new(87, 87, 201), None, Some(0.9), None, None, None),
+    )));
+
+    // yellow left sphere
+    ray_tracer.add_object(Box::new(Sphere::new(
+        Vec3::new(-1.0, -1.5, 4.0),
+        1.0,
+        Material::new(RGB::new(183, 183, 78), None, None, Some(380.0), None, None),
+    )));
+
+    // world sphere
+    ray_tracer.add_object(Box::new(Sphere::new(
+        Vec3::new(-2.0, 1.5, 5.0),
+        0.8,
         Material::new(
             RGB::new(0, 0, 0),
             Some("./textures/earthmap.jpg"),
@@ -42,15 +45,53 @@ fn main() {
             None,
         ),
     )));
+
+    // Back panel
     ray_tracer.add_object(Box::new(Panel::new(
-        Vec3::new(1.5, 0.0, 4.0),
-        Vec3::new(-1.0, 0.0, 0.0),
-        1.0,
-        2.0,
-        Material::new(RGB::new(0, 255, 0), None, Some(0.9), None, None, None),
+        Vec3::new(0.0, 0.0, 7.0),
+        Vec3::new(0.0, 0.0, -1.0),
+        4.0,
+        5.0,
+        Material::new(RGB::new(233, 233, 233), None, None, None, None, None),
     )));
 
-    ray_tracer.add_light(Box::new(PointLight::new(Vec3::new(0.0, 2.0, 0.0), 0.8)));
+    // front panel
+    ray_tracer.add_object(Box::new(Panel::new(
+        Vec3::new(0.0, 0.0, -7.0),
+        Vec3::new(0.0, 0.0, 1.0),
+        4.0,
+        5.0,
+        Material::new(RGB::new(233, 233, 233), None, None, None, None, None),
+    )));
+
+    // bottom panel
+    ray_tracer.add_object(Box::new(Panel::new(
+        Vec3::new(0.0, -4.0, 4.0),
+        Vec3::new(0.0, 1.0, 0.0),
+        6.0,
+        4.0,
+        Material::new(RGB::new(233, 233, 233), None, None, None, None, None),
+    )));
+
+    // right panel
+    ray_tracer.add_object(Box::new(Panel::new(
+        Vec3::new(4.0, 0.0, 4.0),
+        Vec3::new(-1.0, 0.0, 0.0),
+        4.0,
+        5.0,
+        Material::new(RGB::new(255, 118, 118), None, None, None, None, None),
+    )));
+
+    // left panel
+    ray_tracer.add_object(Box::new(Panel::new(
+        Vec3::new(-4.0, 0.0, 4.0),
+        Vec3::new(1.0, 0.0, 0.0),
+        4.0,
+        5.0,
+        Material::new(RGB::new(100, 227, 106), None, None, None, None, None),
+    )));
+
+    ray_tracer.add_light(Box::new(PointLight::new(Vec3::new(0.0, 2.0, 4.0), 0.8)));
     ray_tracer.add_light(Box::new(AmbientLight::new(0.2)));
 
     ray_tracer.render();
