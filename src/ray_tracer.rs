@@ -99,9 +99,9 @@ impl RayTracer {
         }
 
         return RGB::new(
-            final_red.saturating_div(self.pixel_samples) as u8,
-            final_green.saturating_div(self.pixel_samples) as u8,
-            final_blue.saturating_div(self.pixel_samples) as u8,
+            final_red.saturating_div(self.pixel_samples).min(255) as u8,
+            final_green.saturating_div(self.pixel_samples).min(255) as u8,
+            final_blue.saturating_div(self.pixel_samples).min(255) as u8,
         );
     }
 
