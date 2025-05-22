@@ -117,3 +117,69 @@ impl Material {
         return &self.transparency;
     }
 }
+
+/// an object that makes it easy to "build" a material from scratch
+///
+/// The end user can only use this object
+pub struct MaterialBuilder<'a> {
+    color: RGB,
+    texture_path: Option<&'a str>,
+    reflectiveness: Option<f64>,
+    specularity: Option<f64>,
+    refraction: Option<f64>,
+    transparency: Option<f64>,
+}
+
+impl<'a> MaterialBuilder<'a> {
+    pub fn new() -> Self {
+        return Self {
+            color: RGB::new(0, 0, 0),
+            texture_path: None,
+            reflectiveness: None,
+            specularity: None,
+            refraction: None,
+            transparency: None,
+        };
+    }
+
+    pub fn set_color(&mut self, color: RGB) -> &mut Self {
+        self.color = color;
+        return self;
+    }
+
+    pub fn set_texture(&mut self, texture_path: &'a str) -> &mut Self {
+        self.texture_path = Some(texture_path);
+        return self;
+    }
+
+    pub fn set_reflectiveness(&mut self, reflectiveness: f64) -> &mut Self {
+        self.reflectiveness = Some(reflectiveness);
+        return self;
+    }
+
+    pub fn set_specularity(&mut self, specularity: f64) -> &mut Self {
+        self.specularity = Some(specularity);
+        return self;
+    }
+
+    pub fn set_refraction(&mut self, refraction: f64) -> &mut Self {
+        self.refraction = Some(refraction);
+        return self;
+    }
+
+    pub fn set_transparency(&mut self, transparency: f64) -> &mut Self {
+        self.transparency = Some(transparency);
+        return self;
+    }
+
+    pub fn build(&self) -> Material {
+        return Material::new(
+            self.color,
+            self.texture_path,
+            self.reflectiveness,
+            self.specularity,
+            self.refraction,
+            self.transparency,
+        );
+    }
+}
