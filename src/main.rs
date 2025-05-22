@@ -49,45 +49,55 @@ fn main() {
     // Back panel
     ray_tracer.add_object(Box::new(Panel::new(
         Vec3::new(0.0, 0.0, 7.0),
-        Vec3::new(0.0, 0.0, -1.0),
         4.0,
-        5.0,
+        4.0,
+        Vec3::new(0.0, 0.0, -1.0),
         Material::new(RGB::new(233, 233, 233), None, None, None, None, None),
     )));
 
     // front panel
     ray_tracer.add_object(Box::new(Panel::new(
-        Vec3::new(0.0, 0.0, -7.0),
-        Vec3::new(0.0, 0.0, 1.0),
+        Vec3::new(0.0, 0.0, 0.0),
         4.0,
-        5.0,
+        4.0,
+        Vec3::new(0.0, 0.0, 1.0),
         Material::new(RGB::new(233, 233, 233), None, None, None, None, None),
     )));
 
     // bottom panel
     ray_tracer.add_object(Box::new(Panel::new(
         Vec3::new(0.0, -4.0, 4.0),
-        Vec3::new(0.0, 1.0, 0.0),
-        6.0,
         4.0,
+        4.0,
+        Vec3::new(0.0, 1.0, 0.0),
         Material::new(RGB::new(233, 233, 233), None, None, None, None, None),
     )));
+
+    // top panel
+    ray_tracer.add_object(Box::new(Panel::new(
+        Vec3::new(0.0, 4.0, 4.0),
+        4.0,
+        4.0,
+        Vec3::new(0.0, -1.0, 0.0),
+        Material::new(RGB::new(233, 233, 233), None, None, None, None, None),
+    )));
+
 
     // right panel
     ray_tracer.add_object(Box::new(Panel::new(
         Vec3::new(4.0, 0.0, 4.0),
-        Vec3::new(-1.0, 0.0, 0.0),
         4.0,
-        5.0,
+        4.0,
+        Vec3::new(-1.0, 0.0, 0.0),
         Material::new(RGB::new(255, 118, 118), None, None, None, None, None),
     )));
 
     // left panel
     ray_tracer.add_object(Box::new(Panel::new(
         Vec3::new(-4.0, 0.0, 4.0),
-        Vec3::new(1.0, 0.0, 0.0),
         4.0,
-        5.0,
+        4.0,
+        Vec3::new(1.0, 0.0, 0.0),
         Material::new(RGB::new(100, 227, 106), None, None, None, None, None),
     )));
 

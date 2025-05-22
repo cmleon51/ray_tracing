@@ -1,45 +1,6 @@
-use std::f64;
-
 use crate::canvas::RGB;
 use crate::world::objects::{Material, Object};
 use crate::world::{Ray, Vec3};
-
-/// object to abstract the bounding box of a Panel
-///
-/// Trough the use of this object we can create a bounding box and check if a specific vector is
-/// inside or outside
-struct BoundingBox {
-    top_right: Vec3,
-    top_left: Vec3,
-    bottom_right: Vec3,
-    bottom_left: Vec3,
-}
-
-impl BoundingBox {
-    pub fn new(bounding_center: Vec3, bounding_width: f64, bounding_height: f64) -> Self {
-        return Self {
-            top_right: bounding_center + Vec3::new(bounding_width, bounding_height, 0.0),
-            top_left: bounding_center + Vec3::new(-bounding_width, bounding_height, 0.0),
-            bottom_right: bounding_center + Vec3::new(bounding_width, -bounding_height, 0.0),
-            bottom_left: bounding_center + Vec3::new(-bounding_width, -bounding_height, 0.0),
-        };
-    }
-
-    pub fn is_vec_inside(&self, vec_to_check: Vec3) -> bool {
-        let vec_check_x = *vec_to_check.get_x();
-        let vec_check_y = *vec_to_check.get_y();
-        let vec_check_z = *vec_to_check.get_z();
-
-        return vec_check_x < *self.top_right.get_x()
-            && vec_check_y < *self.top_right.get_y()
-            && vec_check_x > *self.top_left.get_x()
-            && vec_check_y < *self.top_left.get_y()
-            && vec_check_x < *self.bottom_right.get_x()
-            && vec_check_y > *self.bottom_right.get_y()
-            && vec_check_x > *self.bottom_left.get_x()
-            && vec_check_y > *self.bottom_right.get_y();
-    }
-}
 
 /// object to abstract a panel in our ray traced world
 ///
@@ -47,23 +8,40 @@ impl BoundingBox {
 /// with `is_object_hit`
 pub struct Panel {
     panel_origin: Vec3,
-    panel_normal: Vec3,
-    bounding_box: BoundingBox,
+    u: Vec3,
+    v: Vec3,
+    normal: Vec3,
     material: Material,
 }
 
 impl Panel {
     pub fn new(
         panel_origin: Vec3,
-        panel_normal: Vec3,
         panel_width: f64,
         panel_height: f64,
+        mut panel_normal: Vec3,
         material: Material,
     ) -> Self {
+        panel_normal.make_unit();
+        // these vectors are necessary to establish u and v
+        let mut u = *panel_origin.cross_product(&panel_normal).make_unit();
+        let mut v = panel_normal.cross_product(&u);
+
+        // if the scalar_vectors are impossible then they are "normal"
+        if u.get_x().is_nan() && u.get_y().is_nan() && u.get_z().is_nan()
+            || v.get_x().is_nan() && v.get_y().is_nan() && v.get_z().is_nan() {
+            u = Vec3::new(1.0, 0.0, 0.0);
+            v = Vec3::new(0.0, 1.0, 0.0);
+        }
+
+        u = u * panel_width;
+        v = v * panel_height;
+
         return Self {
             panel_origin,
-            panel_normal,
-            bounding_box: BoundingBox::new(panel_origin, panel_width, panel_height),
+            u,
+            v,
+            normal: panel_normal,
             material,
         };
     }
@@ -71,22 +49,22 @@ impl Panel {
 
 impl Object for Panel {
     fn is_object_hit(&self, ray: &Ray) -> Option<f64> {
-        let panel_normal = self.get_normal(Vec3::new(0.0, 0.0, 0.0))?;
-        let discriminant = ray.get_direction().dot_product(&panel_normal);
+        let u_v_cross = self.u.cross_product(&self.v);
+        let discriminant = ray.get_direction().get_inverse().dot_product(&u_v_cross);
 
-        if discriminant == 0.0 {
+        if discriminant <= 0.001 && discriminant >= -0.001 {
             return None;
         }
 
-        let t = ((self.panel_origin - (*ray.get_direction())).dot_product(&panel_normal))
-            / discriminant;
+        let t = u_v_cross.dot_product(&((*ray.get_position()) - self.panel_origin)) / discriminant;
 
-        // it's certinately not the best way to check if a ray is inside the width and height of
-        // the box but it's the one i've come up with
-        if !self
-            .bounding_box
-            .is_vec_inside(ray.calculate_ray_position(t))
-        {
+        // u and v are calculated to check if the point lies inside or outside the plane
+        let u_scalar = self.v.cross_product(&(ray.get_direction().get_inverse())).dot_product(&((*ray.get_position()) - self.panel_origin)) /
+            ray.get_direction().get_inverse().dot_product(&u_v_cross);
+        let v_scalar = ray.get_direction().cross_product(&self.u).dot_product(&((*ray.get_position()) - self.panel_origin)) /
+            ray.get_direction().get_inverse().dot_product(&u_v_cross);
+
+        if u_scalar > 1.0 || u_scalar < -1.0 || v_scalar > 1.0 || v_scalar < -1.0 {
             return None;
         }
 
@@ -94,7 +72,7 @@ impl Object for Panel {
     }
 
     fn get_normal(&self, point: Vec3) -> Option<Vec3> {
-        return Some(self.panel_normal);
+        return Some(self.normal);
     }
 
     fn get_material(&self) -> &Material {
