@@ -29,7 +29,8 @@ impl Panel {
 
         // if the scalar_vectors are impossible then they are "normal"
         if u.get_x().is_nan() && u.get_y().is_nan() && u.get_z().is_nan()
-            || v.get_x().is_nan() && v.get_y().is_nan() && v.get_z().is_nan() {
+            || v.get_x().is_nan() && v.get_y().is_nan() && v.get_z().is_nan()
+        {
             u = Vec3::new(1.0, 0.0, 0.0);
             v = Vec3::new(0.0, 1.0, 0.0);
         }
@@ -59,10 +60,16 @@ impl Object for Panel {
         let t = u_v_cross.dot_product(&((*ray.get_position()) - self.panel_origin)) / discriminant;
 
         // u and v are calculated to check if the point lies inside or outside the plane
-        let u_scalar = self.v.cross_product(&(ray.get_direction().get_inverse())).dot_product(&((*ray.get_position()) - self.panel_origin)) /
-            ray.get_direction().get_inverse().dot_product(&u_v_cross);
-        let v_scalar = ray.get_direction().cross_product(&self.u).dot_product(&((*ray.get_position()) - self.panel_origin)) /
-            ray.get_direction().get_inverse().dot_product(&u_v_cross);
+        let u_scalar = self
+            .v
+            .cross_product(&(ray.get_direction().get_inverse()))
+            .dot_product(&((*ray.get_position()) - self.panel_origin))
+            / ray.get_direction().get_inverse().dot_product(&u_v_cross);
+        let v_scalar = ray
+            .get_direction()
+            .cross_product(&self.u)
+            .dot_product(&((*ray.get_position()) - self.panel_origin))
+            / ray.get_direction().get_inverse().dot_product(&u_v_cross);
 
         if u_scalar > 1.0 || u_scalar < -1.0 || v_scalar > 1.0 || v_scalar < -1.0 {
             return None;

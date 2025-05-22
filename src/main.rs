@@ -15,35 +15,47 @@ fn main() {
         1200,
         RGB::new(53, 81, 92),
         2.0,
-        2,
+        8,
     );
 
     // blue right sphere
     ray_tracer.add_object(Box::new(Sphere::new(
         Vec3::new(1.3, -1.5, 5.0),
         1.0,
-        MaterialBuilder::new().set_color(RGB::new(87, 87, 201)).set_reflectiveness(0.9).build()
+        MaterialBuilder::new()
+            .set_color(RGB::new(87, 87, 201))
+            .set_reflectiveness(0.9)
+            .build(),
     )));
 
     // yellow left sphere
     ray_tracer.add_object(Box::new(Sphere::new(
         Vec3::new(-1.0, -1.5, 4.0),
         1.0,
-        MaterialBuilder::new().set_color(RGB::new(183, 183, 78)).set_specularity(380.0).build(), 
+        MaterialBuilder::new()
+            .set_color(RGB::new(183, 183, 78))
+            .set_specularity(380.0)
+            .build(),
     )));
 
     // world sphere
     ray_tracer.add_object(Box::new(Sphere::new(
         Vec3::new(-2.0, 1.5, 5.0),
         0.8,
-        MaterialBuilder::new().set_texture("./textures/earthmap.jpg").build()
+        MaterialBuilder::new()
+            .set_texture("./textures/earthmap.jpg")
+            .build(),
     )));
 
     // refracted sphere
     ray_tracer.add_object(Box::new(Sphere::new(
         Vec3::new(2.0, 1.5, 4.0),
         0.8,
-        MaterialBuilder::new().set_color(RGB::new(255, 255, 255)).set_refraction(1.55).set_transparency(1.0).build()
+        MaterialBuilder::new()
+            .set_color(RGB::new(255, 255, 255))
+            .set_refraction(1.55)
+            .set_transparency(1.0)
+            .build(),
     )));
 
     // Back panel
@@ -52,7 +64,9 @@ fn main() {
         4.0,
         4.0,
         Vec3::new(0.0, 0.0, -1.0),
-        MaterialBuilder::new().set_color(RGB::new(233, 233, 233)).build(),
+        MaterialBuilder::new()
+            .set_color(RGB::new(233, 233, 233))
+            .build(),
     )));
 
     // front panel
@@ -61,7 +75,9 @@ fn main() {
         4.0,
         4.0,
         Vec3::new(0.0, 0.0, 1.0),
-        MaterialBuilder::new().set_color(RGB::new(233, 233, 233)).build(),
+        MaterialBuilder::new()
+            .set_color(RGB::new(233, 233, 233))
+            .build(),
     )));
 
     // bottom panel
@@ -70,7 +86,9 @@ fn main() {
         4.0,
         4.0,
         Vec3::new(0.0, 1.0, 0.0),
-        MaterialBuilder::new().set_color(RGB::new(233, 233, 233)).build(),
+        MaterialBuilder::new()
+            .set_color(RGB::new(233, 233, 233))
+            .build(),
     )));
 
     // top panel
@@ -79,9 +97,10 @@ fn main() {
         4.0,
         4.0,
         Vec3::new(0.0, -1.0, 0.0),
-        MaterialBuilder::new().set_color(RGB::new(233, 233, 233)).build(),
+        MaterialBuilder::new()
+            .set_color(RGB::new(233, 233, 233))
+            .build(),
     )));
-
 
     // right panel
     ray_tracer.add_object(Box::new(Panel::new(
@@ -89,7 +108,9 @@ fn main() {
         4.0,
         4.0,
         Vec3::new(-1.0, 0.0, 0.0),
-        MaterialBuilder::new().set_color(RGB::new(255, 118, 118)).build(),
+        MaterialBuilder::new()
+            .set_color(RGB::new(255, 118, 118))
+            .build(),
     )));
 
     // left panel
@@ -98,7 +119,9 @@ fn main() {
         4.0,
         4.0,
         Vec3::new(1.0, 0.0, 0.0),
-        MaterialBuilder::new().set_color(RGB::new(100, 227, 106)).build(),
+        MaterialBuilder::new()
+            .set_color(RGB::new(100, 227, 106))
+            .build(),
     )));
 
     ray_tracer.add_light(Box::new(PointLight::new(Vec3::new(0.0, 2.0, 4.0), 0.8)));
