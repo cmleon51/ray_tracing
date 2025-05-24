@@ -35,8 +35,8 @@ impl Panel {
             v = Vec3::new(0.0, 1.0, 0.0);
         }
 
-        u = u * panel_width;
-        v = v * panel_height;
+        u = u * (panel_width / 2.0);
+        v = v * (panel_height / 2.0);
 
         return Self {
             panel_origin,
@@ -45,6 +45,14 @@ impl Panel {
             normal: panel_normal,
             material,
         };
+    }
+
+    pub fn get_u(&self) -> Vec3 {
+        return self.u;
+    }
+
+    pub fn get_v(&self) -> Vec3 {
+        return self.v;
     }
 }
 
