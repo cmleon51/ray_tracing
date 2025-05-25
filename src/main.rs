@@ -139,15 +139,23 @@ fn main() {
     let _ = file.write(b"P3\n");
     let _ = file.write(format!("{} {}\n", canvas.get_width(), canvas.get_height()).as_bytes());
     let _ = file.write(b"255\n");
+    
+    let gamma_correction_value = 1.0 / 2.2;
 
     for pixel in canvas {
         let pixel_color = pixel.get_color();
+
+        // applying gamma correction
+        let red = ((f64::from(pixel_color.get_red()) / 255.0).powf(gamma_correction_value) * 255.0) as u8;
+        let green = ((f64::from(pixel_color.get_green()) / 255.0).powf(gamma_correction_value) * 255.0) as u8;
+        let blue = ((f64::from(pixel_color.get_blue()) / 255.0).powf(gamma_correction_value) * 255.0) as u8;
+
         let _ = file.write(
             format!(
                 "{} {} {}\n",
-                pixel_color.get_red(),
-                pixel_color.get_green(),
-                pixel_color.get_blue()
+                red,
+                green,
+                blue,
             )
             .as_bytes(),
         );
