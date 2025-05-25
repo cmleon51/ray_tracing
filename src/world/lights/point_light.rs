@@ -8,14 +8,21 @@ use crate::world::{Light, Object, ObjectRayIntersection, Ray, Vec3};
 pub struct PointLight {
     position: Vec3,
     intensity: f64,
+    light_color: RGB,
 }
 
 impl PointLight {
     /// create a new point light
-    pub fn new(position: Vec3, intensity: f64) -> Self {
+    pub fn new(position: Vec3, intensity: f64, light_color: Option<RGB>) -> Self {
+        let light_color = match light_color {
+            Some(light_color) => light_color,
+            None => RGB::new(255, 255, 255)
+        };
+    
         return Self {
             position,
             intensity,
+            light_color,
         };
     }
 }
@@ -38,7 +45,14 @@ impl Light for PointLight {
         if let Some(normal) = current_object.get_normal(point) {
             let mut light_intensity = 0.0;
             let light_direction = self.position - point;
-            let object_color = ray_object.get_hit_object().get_color(point);
+            let mut object_color = ray_object.get_hit_object().get_color(point);
+
+            // the object's color is affected by the light's color
+            object_color = RGB::new(
+                (f64::from(object_color.get_red()) * (f64::from(self.light_color.get_red()) / 255.0)) as u8,
+                (f64::from(object_color.get_green()) * (f64::from(self.light_color.get_green()) / 255.0)) as u8,
+                (f64::from(object_color.get_blue()) * (f64::from(self.light_color.get_blue()) / 255.0)) as u8,
+            );
 
             // after we get the light direction we need to compute if there are objects in our way
             // between the 'current_object' and the 'other_objects'

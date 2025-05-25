@@ -13,9 +13,14 @@ pub struct PanelLight {
 }
 
 impl PanelLight {
-    pub fn new(panel_origin: Vec3, panel_width: f64, panel_height: f64, panel_normal: Vec3,mut intensity: f64, intersection_gap: f64) -> Self {
+    pub fn new(panel_origin: Vec3, panel_width: f64, panel_height: f64, panel_normal: Vec3,mut intensity: f64, intersection_gap: f64, light_color: Option<RGB>) -> Self {
+        let light_color = match light_color {
+            Some(light_color) => light_color,
+            None => RGB::new(255, 255, 255)
+        };
+
         intensity *= (panel_width * panel_height); // the intensity increases as the area of the light source does
-        let panel = Panel::new(panel_origin, panel_width, panel_height, panel_normal, MaterialBuilder::new().set_color(RGB::new(255, 255, 255) * intensity).build());
+        let panel = Panel::new(panel_origin, panel_width, panel_height, panel_normal, MaterialBuilder::new().set_color(light_color * intensity).build());
 
         // we calculate every point on the surface we have to check when doing light calculations
         let panel_u = panel.get_u();
@@ -70,7 +75,7 @@ impl Light for PanelLight {
             let mut final_green: u32 = 0;
             let mut final_blue: u32 = 0;
             for intersection_point in &self.intersection_points {
-                let point_light = PointLight::new(*intersection_point, self.intensity);
+                let point_light = PointLight::new(*intersection_point, self.intensity, Some(*self.panel.get_material().get_color()));
                 let calculated_color = point_light.compute_color(ray_object, other_objects, other_lights, light_bounces, background_color);
 
                 final_red = final_red.saturating_add(u32::from(calculated_color.get_red()));

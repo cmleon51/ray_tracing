@@ -11,11 +11,11 @@ fn main() {
         Vec3::new(0.0, 0.0, 0.0),
         Vec3::new(0.0, 0.0, 1.0),
         Vec3::new(0.0, 1.0, 0.0),
-        1200,
-        1200,
+        600,
+        600,
         RGB::new(53, 81, 92),
         2.0,
-        8,
+        2,
     );
 
     // blue right sphere
@@ -124,12 +124,13 @@ fn main() {
     )));
 
     ray_tracer.add_light(Box::new(PanelLight::new(
-        Vec3::new(0.0, 2.5, 4.0),
+        Vec3::new(0.0, 3.9, 4.0),
         1.0,
         1.0,
         Vec3::new(0.0, -1.0, 0.0),
         1.0,
-        0.05,
+        0.1,
+        Some(RGB::new(100, 227, 106)),
     )));
 
     ray_tracer.render();
