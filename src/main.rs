@@ -1,7 +1,7 @@
 use ray_tracing::RGB;
 use ray_tracing::RayTracer;
 use ray_tracing::{
-    AmbientLight, DirectionalLight, MaterialBuilder, Panel, PointLight, Sphere, Triangle, Vec3,
+    AmbientLight, DirectionalLight, MaterialBuilder, Panel, PointLight, Sphere, Triangle, Vec3, PanelLight
 };
 use std::fs::File;
 use std::io::prelude::Write;
@@ -20,7 +20,7 @@ fn main() {
 
     // blue right sphere
     ray_tracer.add_object(Box::new(Sphere::new(
-        Vec3::new(1.3, -1.5, 5.0),
+        Vec3::new(1.3, -3.0, 6.0),
         1.0,
         MaterialBuilder::new()
             .set_color(RGB::new(87, 87, 201))
@@ -30,11 +30,10 @@ fn main() {
 
     // yellow left sphere
     ray_tracer.add_object(Box::new(Sphere::new(
-        Vec3::new(-1.0, -1.5, 4.0),
+        Vec3::new(-1.0, -3.0, 5.0),
         1.0,
         MaterialBuilder::new()
             .set_color(RGB::new(183, 183, 78))
-            .set_specularity(380.0)
             .build(),
     )));
 
@@ -61,8 +60,8 @@ fn main() {
     // Back panel
     ray_tracer.add_object(Box::new(Panel::new(
         Vec3::new(0.0, 0.0, 7.0),
-        4.0,
-        4.0,
+        80.0,
+        80.0,
         Vec3::new(0.0, 0.0, -1.0),
         MaterialBuilder::new()
             .set_color(RGB::new(233, 233, 233))
@@ -72,8 +71,8 @@ fn main() {
     // front panel
     ray_tracer.add_object(Box::new(Panel::new(
         Vec3::new(0.0, 0.0, 0.0),
-        4.0,
-        4.0,
+        8.0,
+        8.0,
         Vec3::new(0.0, 0.0, 1.0),
         MaterialBuilder::new()
             .set_color(RGB::new(233, 233, 233))
@@ -83,20 +82,9 @@ fn main() {
     // bottom panel
     ray_tracer.add_object(Box::new(Panel::new(
         Vec3::new(0.0, -4.0, 4.0),
-        4.0,
-        4.0,
+        80.0,
+        80.0,
         Vec3::new(0.0, 1.0, 0.0),
-        MaterialBuilder::new()
-            .set_color(RGB::new(233, 233, 233))
-            .build(),
-    )));
-
-    // top panel
-    ray_tracer.add_object(Box::new(Panel::new(
-        Vec3::new(0.0, 4.0, 4.0),
-        4.0,
-        4.0,
-        Vec3::new(0.0, -1.0, 0.0),
         MaterialBuilder::new()
             .set_color(RGB::new(233, 233, 233))
             .build(),
@@ -105,8 +93,8 @@ fn main() {
     // right panel
     ray_tracer.add_object(Box::new(Panel::new(
         Vec3::new(4.0, 0.0, 4.0),
-        4.0,
-        4.0,
+        8.0,
+        8.0,
         Vec3::new(-1.0, 0.0, 0.0),
         MaterialBuilder::new()
             .set_color(RGB::new(255, 118, 118))
@@ -116,16 +104,33 @@ fn main() {
     // left panel
     ray_tracer.add_object(Box::new(Panel::new(
         Vec3::new(-4.0, 0.0, 4.0),
-        4.0,
-        4.0,
+        8.0,
+        8.0,
         Vec3::new(1.0, 0.0, 0.0),
         MaterialBuilder::new()
             .set_color(RGB::new(100, 227, 106))
             .build(),
     )));
 
-    ray_tracer.add_light(Box::new(PointLight::new(Vec3::new(0.0, 2.0, 4.0), 0.8)));
-    ray_tracer.add_light(Box::new(AmbientLight::new(0.2)));
+    // top panel
+    ray_tracer.add_object(Box::new(Panel::new(
+        Vec3::new(0.0, 4.0, 4.0),
+        8.0,
+        8.0,
+        Vec3::new(0.0, -1.0, 0.0),
+        MaterialBuilder::new()
+            .set_color(RGB::new(233, 233, 233))
+            .build(),
+    )));
+
+    ray_tracer.add_light(Box::new(PanelLight::new(
+        Vec3::new(0.0, 2.5, 4.0),
+        1.0,
+        1.0,
+        Vec3::new(0.0, -1.0, 0.0),
+        1.0,
+        0.05,
+    )));
 
     ray_tracer.render();
 
@@ -140,7 +145,7 @@ fn main() {
     let _ = file.write(format!("{} {}\n", canvas.get_width(), canvas.get_height()).as_bytes());
     let _ = file.write(b"255\n");
     
-    let gamma_correction_value = 1.0 / 2.2;
+    let gamma_correction_value = 1.0;
 
     for pixel in canvas {
         let pixel_color = pixel.get_color();

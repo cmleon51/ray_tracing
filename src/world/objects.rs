@@ -1,5 +1,6 @@
 use crate::canvas::RGB;
 use crate::world::Material;
+use crate::world::Light;
 use crate::world::Ray;
 use crate::world::Vec3;
 
@@ -10,12 +11,13 @@ pub struct ObjectRayIntersection<'a> {
     viewing_vector: Vec3,
     object: &'a Box<dyn Object>,
     object_point: Vec3,
+    is_light_hit: bool,
 }
 
 impl<'a> ObjectRayIntersection<'a> {
     /// creates a new ObjectRayIntersection object, it's a private function since only
     /// `check_intersection` should be really used
-    fn new(ray: Ray, t: f64, object: &'a Box<dyn Object>) -> Self {
+    fn new(ray: Ray, t: f64, object: &'a Box<dyn Object>, is_light_hit: bool) -> Self {
         let object_point = ray.calculate_ray_position(t);
         let viewing_vector = ray.get_direction().get_inverse();
 
@@ -25,6 +27,7 @@ impl<'a> ObjectRayIntersection<'a> {
             viewing_vector,
             object,
             object_point,
+            is_light_hit,
         };
     }
 
@@ -32,11 +35,13 @@ impl<'a> ObjectRayIntersection<'a> {
     pub fn check_intersection(
         ray: Ray,
         objects: &'a Vec<Box<dyn Object>>,
+        lights: &'a Vec<Box<dyn Light>>,
         min_t: f64,
         max_t: f64,
     ) -> Option<Self> {
         let mut smallest_t = f64::MAX;
         let mut hit_object: Option<&Box<dyn Object>> = None;
+        let mut is_light_hit = false;
 
         for object in objects {
             match object.is_object_hit(&ray) {
@@ -50,8 +55,24 @@ impl<'a> ObjectRayIntersection<'a> {
             }
         }
 
+        // i check if a light is being hit before the object
+        for light in lights {
+            if let Some(light_object) = light.get_object() {
+                match light_object.is_object_hit(&ray) {
+                    Some(t) => {
+                        if t < smallest_t && t > min_t && t < max_t {
+                            smallest_t = t;
+                            is_light_hit = true;
+                            hit_object = Some(light_object);
+                        }
+                    }
+                    None => (),
+                }
+            }
+        }
+
         if let Some(hit_object) = hit_object {
-            return Some(Self::new(ray, smallest_t, hit_object));
+            return Some(Self::new(ray, smallest_t, hit_object, is_light_hit));
         }
 
         return None;
@@ -75,6 +96,11 @@ impl<'a> ObjectRayIntersection<'a> {
     /// retrieves the ray
     pub fn get_ray(&self) -> &Ray {
         return &self.ray;
+    }
+
+    /// tells the user if it's a light that is being hit
+    pub fn is_light_hit(&self) -> bool {
+        return self.is_light_hit;
     }
 }
 

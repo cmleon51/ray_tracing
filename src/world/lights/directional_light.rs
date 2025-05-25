@@ -25,6 +25,7 @@ impl Light for DirectionalLight {
         &self,
         ray_object: &ObjectRayIntersection,
         other_objects: &Vec<Box<dyn Object>>,
+        other_lights: &Vec<Box<dyn Light>>,
         light_bounces: u8,
         background_color: RGB,
     ) -> RGB {
@@ -47,6 +48,7 @@ impl Light for DirectionalLight {
             if let Some(hit_object) = ObjectRayIntersection::check_intersection(
                 ray_to_light,
                 other_objects,
+                &vec![],
                 0.001,
                 light_length,
             ) {
@@ -115,12 +117,14 @@ impl Light for DirectionalLight {
                         if let Some(hit_object) = ObjectRayIntersection::check_intersection(
                             refracted_ray,
                             other_objects,
+                            other_lights,
                             0.001,
                             f64::MAX,
                         ) {
                             refracted_color = self.compute_color(
                                 &hit_object,
                                 other_objects,
+                                other_lights,
                                 light_bounces - 1,
                                 background_color,
                             );
@@ -149,12 +153,14 @@ impl Light for DirectionalLight {
                     if let Some(ray_object_intersection) = ObjectRayIntersection::check_intersection(
                         bounce_ray,
                         other_objects,
+                        other_lights,
                         0.001,
                         f64::MAX,
                     ) {
                         reflected_color = self.compute_color(
                             &ray_object_intersection,
                             other_objects,
+                            other_lights,
                             light_bounces - 1,
                             background_color,
                         );

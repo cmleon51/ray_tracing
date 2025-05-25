@@ -25,6 +25,7 @@ impl Light for PointLight {
         &self,
         ray_object: &ObjectRayIntersection,
         other_objects: &Vec<Box<dyn Object>>,
+        other_lights: &Vec<Box<dyn Light>>,
         light_bounces: u8,
         background_color: RGB,
     ) -> RGB {
@@ -47,10 +48,13 @@ impl Light for PointLight {
             if let Some(hit_object) = ObjectRayIntersection::check_intersection(
                 ray_to_light,
                 other_objects,
+                other_lights,
                 0.001,
                 light_length,
             ) {
-                return RGB::new(0, 0, 0);
+                // if !hit_object.is_light_hit() {
+                    return RGB::new(0, 0, 0);
+                // }
             }
 
             let light_normal_dotproduct = normal.dot_product(&light_direction);
@@ -115,15 +119,21 @@ impl Light for PointLight {
                         if let Some(hit_object) = ObjectRayIntersection::check_intersection(
                             refracted_ray,
                             other_objects,
+                            other_lights,
                             0.001,
                             f64::MAX,
                         ) {
-                            refracted_color = self.compute_color(
-                                &hit_object,
-                                other_objects,
-                                light_bounces - 1,
-                                background_color,
-                            );
+                            if !hit_object.is_light_hit() {
+                                refracted_color = self.compute_color(
+                                    &hit_object,
+                                    other_objects,
+                                    other_lights,
+                                    light_bounces - 1,
+                                    background_color,
+                                );
+                            }else {
+                                refracted_color = hit_object.get_hit_object().get_color(*hit_object.get_hit_point());
+                            }
                         } else {
                             refracted_color = background_color;
                         }
@@ -150,15 +160,21 @@ impl Light for PointLight {
                     if let Some(ray_object_intersection) = ObjectRayIntersection::check_intersection(
                         bounce_ray,
                         other_objects,
+                        other_lights,
                         0.001,
                         f64::MAX,
                     ) {
-                        reflected_color = self.compute_color(
-                            &ray_object_intersection,
-                            other_objects,
-                            light_bounces - 1,
-                            background_color,
-                        );
+                        if !ray_object_intersection.is_light_hit() {
+                            reflected_color = self.compute_color(
+                                &ray_object_intersection,
+                                other_objects,
+                                other_lights,
+                                light_bounces - 1,
+                                background_color,
+                            );
+                        }else {
+                            reflected_color = ray_object_intersection.get_hit_object().get_color(*ray_object_intersection.get_hit_point());
+                        }
                     } else {
                         reflected_color = background_color;
                     }

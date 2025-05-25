@@ -10,9 +10,15 @@ pub trait Light {
         &self,
         ray_object: &ObjectRayIntersection,
         other_objects: &Vec<Box<dyn Object>>,
+        other_lights: &Vec<Box<dyn Light>>,
         light_bounces: u8,
         background_color: RGB,
     ) -> RGB;
+
+    /// this function returns the light's objects (necessary to implement area lights)
+    fn get_object(&self) -> Option<&Box<dyn Object>> {
+        return None;
+    }
 }
 
 /// module to implement an ambient light
@@ -21,8 +27,11 @@ mod ambient_light;
 mod directional_light;
 /// module to implement a point light
 mod point_light;
+/// moidule to implement a panel light
+mod panel_light;
 
 // extracting everything we may need
 pub use ambient_light::AmbientLight;
 pub use directional_light::DirectionalLight;
 pub use point_light::PointLight;
+pub use panel_light::PanelLight;
