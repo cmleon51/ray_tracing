@@ -1,8 +1,10 @@
-use rand::Rng;
 use crate::canvas::RGB;
-use crate::world::{Light, Object, ObjectRayIntersection, Ray, Vec3, Panel, MaterialBuilder, PointLight};
+use crate::world::{
+    Light, MaterialBuilder, Object, ObjectRayIntersection, Panel, PointLight, Ray, Vec3,
+};
+use rand::Rng;
 
-/// Object abstracting a panel area light 
+/// Object abstracting a panel area light
 ///
 /// trough the use of this object we can simulate a "Panel Light" by using the methods given by the
 /// trait `Light`
@@ -13,10 +15,18 @@ pub struct PanelLight {
 }
 
 impl PanelLight {
-    pub fn new(panel_origin: Vec3, panel_width: f64, panel_height: f64, panel_normal: Vec3,mut intensity: f64, intersection_gap: f64, light_color: Option<RGB>) -> Self {
+    pub fn new(
+        panel_origin: Vec3,
+        panel_width: f64,
+        panel_height: f64,
+        panel_normal: Vec3,
+        mut intensity: f64,
+        intersection_gap: f64,
+        light_color: Option<RGB>,
+    ) -> Self {
         let light_color = match light_color {
             Some(light_color) => light_color,
-            None => RGB::new(255, 255, 255)
+            None => RGB::new(255, 255, 255),
         };
 
         // we calculate how many steps we have to take based upon the 'intesection_gap' variable
@@ -28,7 +38,15 @@ impl PanelLight {
         intensity *= sample_area;
 
         // multiplying the light_color by the intensity to give the user some feedback
-       let panel = Panel::new(panel_origin, panel_width, panel_height, panel_normal, MaterialBuilder::new().set_color(light_color * (intensity.min(1.0))).build());
+        let panel = Panel::new(
+            panel_origin,
+            panel_width,
+            panel_height,
+            panel_normal,
+            MaterialBuilder::new()
+                .set_color(light_color * (intensity.min(1.0)))
+                .build(),
+        );
 
         // we calculate every point on the surface we have to check when doing light calculations
         let panel_u = panel.get_u();
@@ -55,7 +73,7 @@ impl PanelLight {
         return Self {
             panel: Box::new(panel),
             intersection_points,
-            intensity, 
+            intensity,
         };
     }
 }
@@ -79,8 +97,18 @@ impl Light for PanelLight {
             let mut final_green: u32 = 0;
             let mut final_blue: u32 = 0;
             for intersection_point in &self.intersection_points {
-                let point_light = PointLight::new(*intersection_point, self.intensity, Some(*self.panel.get_material().get_color()));
-                let calculated_color = point_light.compute_color(ray_object, other_objects, other_lights, light_bounces, background_color);
+                let point_light = PointLight::new(
+                    *intersection_point,
+                    self.intensity,
+                    Some(*self.panel.get_material().get_color()),
+                );
+                let calculated_color = point_light.compute_color(
+                    ray_object,
+                    other_objects,
+                    other_lights,
+                    light_bounces,
+                    background_color,
+                );
 
                 final_red = final_red.saturating_add(u32::from(calculated_color.get_red()));
                 final_green = final_green.saturating_add(u32::from(calculated_color.get_green()));
@@ -89,9 +117,15 @@ impl Light for PanelLight {
 
             let intersection_samples_count: u32 = self.intersection_points.len() as u32;
             let final_color = RGB::new(
-                final_red.saturating_div(intersection_samples_count).min(255) as u8,
-                final_green.saturating_div(intersection_samples_count).min(255) as u8,
-                final_blue.saturating_div(intersection_samples_count).min(255) as u8,
+                final_red
+                    .saturating_div(intersection_samples_count)
+                    .min(255) as u8,
+                final_green
+                    .saturating_div(intersection_samples_count)
+                    .min(255) as u8,
+                final_blue
+                    .saturating_div(intersection_samples_count)
+                    .min(255) as u8,
             );
 
             return final_color;

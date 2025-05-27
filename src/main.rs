@@ -1,7 +1,8 @@
 use ray_tracing::RGB;
 use ray_tracing::RayTracer;
 use ray_tracing::{
-    AmbientLight, DirectionalLight, MaterialBuilder, Panel, PointLight, Sphere, Triangle, Vec3, PanelLight
+    AmbientLight, DirectionalLight, MaterialBuilder, Panel, PanelLight, PointLight, Sphere,
+    Triangle, Vec3,
 };
 use std::fs::File;
 use std::io::prelude::Write;
@@ -11,11 +12,11 @@ fn main() {
         Vec3::new(0.0, 0.0, 0.0),
         Vec3::new(0.0, 0.0, 1.0),
         Vec3::new(0.0, 1.0, 0.0),
-        600,
-        600,
+        1200,
+        1200,
         RGB::new(53, 81, 92),
         2.0,
-        2,
+        8,
     );
 
     // blue right sphere
@@ -128,9 +129,9 @@ fn main() {
         1.0,
         1.0,
         Vec3::new(0.0, -1.0, 0.0),
-        1.0,
-        0.1,
-        Some(RGB::new(100, 227, 106)),
+        100.0,
+        0.01,
+        Some(RGB::new(255, 255, 255)),
     )));
 
     ray_tracer.render();
@@ -145,25 +146,20 @@ fn main() {
     let _ = file.write(b"P3\n");
     let _ = file.write(format!("{} {}\n", canvas.get_width(), canvas.get_height()).as_bytes());
     let _ = file.write(b"255\n");
-    
+
     let gamma_correction_value = 1.0;
 
     for pixel in canvas {
         let pixel_color = pixel.get_color();
 
         // applying gamma correction
-        let red = ((f64::from(pixel_color.get_red()) / 255.0).powf(gamma_correction_value) * 255.0) as u8;
-        let green = ((f64::from(pixel_color.get_green()) / 255.0).powf(gamma_correction_value) * 255.0) as u8;
-        let blue = ((f64::from(pixel_color.get_blue()) / 255.0).powf(gamma_correction_value) * 255.0) as u8;
+        let red =
+            ((f64::from(pixel_color.get_red()) / 255.0).powf(gamma_correction_value) * 255.0) as u8;
+        let green = ((f64::from(pixel_color.get_green()) / 255.0).powf(gamma_correction_value)
+            * 255.0) as u8;
+        let blue = ((f64::from(pixel_color.get_blue()) / 255.0).powf(gamma_correction_value)
+            * 255.0) as u8;
 
-        let _ = file.write(
-            format!(
-                "{} {} {}\n",
-                red,
-                green,
-                blue,
-            )
-            .as_bytes(),
-        );
+        let _ = file.write(format!("{} {} {}\n", red, green, blue,).as_bytes());
     }
 }

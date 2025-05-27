@@ -25,13 +25,13 @@ pub trait Light {
 mod ambient_light;
 /// module to implement a directional light
 mod directional_light;
-/// module to implement a point light
-mod point_light;
 /// moidule to implement a panel light
 mod panel_light;
+/// module to implement a point light
+mod point_light;
 
 // extracting everything we may need
 pub use ambient_light::AmbientLight;
 pub use directional_light::DirectionalLight;
-pub use point_light::PointLight;
 pub use panel_light::PanelLight;
+pub use point_light::PointLight;

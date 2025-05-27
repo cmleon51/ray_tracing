@@ -75,9 +75,13 @@ impl RayTracer {
                 None,
             );
 
-            if let Some(object_intersection) =
-                ObjectRayIntersection::check_intersection(ray, &self.objects, &self.lights, 1.0, f64::MAX)
-            {
+            if let Some(object_intersection) = ObjectRayIntersection::check_intersection(
+                ray,
+                &self.objects,
+                &self.lights,
+                1.0,
+                f64::MAX,
+            ) {
                 if !object_intersection.is_light_hit() {
                     for light in &self.lights {
                         let hit_color = light.compute_color(
@@ -92,9 +96,11 @@ impl RayTracer {
                         final_green = final_green.saturating_add(u32::from(hit_color.get_green()));
                         final_blue = final_blue.saturating_add(u32::from(hit_color.get_blue()));
                     }
-                }else {
+                } else {
                     // we return just the objects color
-                    let object_color= object_intersection.get_hit_object().get_color(*object_intersection.get_hit_point());
+                    let object_color = object_intersection
+                        .get_hit_object()
+                        .get_color(*object_intersection.get_hit_point());
                     final_red = final_red.saturating_add(u32::from(object_color.get_red()));
                     final_green = final_green.saturating_add(u32::from(object_color.get_green()));
                     final_blue = final_blue.saturating_add(u32::from(object_color.get_blue()));

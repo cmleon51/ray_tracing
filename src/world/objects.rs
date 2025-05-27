@@ -1,6 +1,6 @@
 use crate::canvas::RGB;
-use crate::world::Material;
 use crate::world::Light;
+use crate::world::Material;
 use crate::world::Ray;
 use crate::world::Vec3;
 

@@ -16,9 +16,9 @@ impl PointLight {
     pub fn new(position: Vec3, intensity: f64, light_color: Option<RGB>) -> Self {
         let light_color = match light_color {
             Some(light_color) => light_color,
-            None => RGB::new(255, 255, 255)
+            None => RGB::new(255, 255, 255),
         };
-    
+
         return Self {
             position,
             intensity,
@@ -60,7 +60,7 @@ impl Light for PointLight {
                 light_length,
             ) {
                 // if !hit_object.is_light_hit() {
-                    return RGB::new(0, 0, 0);
+                return RGB::new(0, 0, 0);
                 // }
             }
 
@@ -87,15 +87,19 @@ impl Light for PointLight {
             }
 
             // using light_length to determine the light_intensity
-            let attenuation = light_intensity / (1.0 + 0.09 * light_length + 0.032 * light_length * light_length);
+            let attenuation =
+                light_intensity / (1.0 + 0.09 * light_length + 0.032 * light_length * light_length);
 
             let mut final_color = (object_color) * (attenuation);
 
             // adding the light's color
             final_color = RGB::new(
-                (f64::from(final_color.get_red()) * (f64::from(self.light_color.get_red()) / 255.0)) as u8,
-                (f64::from(final_color.get_green()) * (f64::from(self.light_color.get_green()) / 255.0)) as u8,
-                (f64::from(final_color.get_blue()) * (f64::from(self.light_color.get_blue()) / 255.0)) as u8,
+                (f64::from(final_color.get_red()) * (f64::from(self.light_color.get_red()) / 255.0))
+                    as u8,
+                (f64::from(final_color.get_green())
+                    * (f64::from(self.light_color.get_green()) / 255.0)) as u8,
+                (f64::from(final_color.get_blue())
+                    * (f64::from(self.light_color.get_blue()) / 255.0)) as u8,
             );
 
             // calculate the refraction
@@ -145,8 +149,10 @@ impl Light for PointLight {
                                     light_bounces - 1,
                                     background_color,
                                 );
-                            }else {
-                                refracted_color = hit_object.get_hit_object().get_color(*hit_object.get_hit_point());
+                            } else {
+                                refracted_color = hit_object
+                                    .get_hit_object()
+                                    .get_color(*hit_object.get_hit_point());
                             }
                         } else {
                             refracted_color = background_color;
@@ -186,8 +192,10 @@ impl Light for PointLight {
                                 light_bounces - 1,
                                 background_color,
                             );
-                        }else {
-                            reflected_color = ray_object_intersection.get_hit_object().get_color(*ray_object_intersection.get_hit_point());
+                        } else {
+                            reflected_color = ray_object_intersection
+                                .get_hit_object()
+                                .get_color(*ray_object_intersection.get_hit_point());
                         }
                     } else {
                         reflected_color = background_color;

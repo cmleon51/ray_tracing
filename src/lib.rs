@@ -17,5 +17,6 @@ mod ray_tracer;
 pub use canvas::RGB;
 pub use ray_tracer::RayTracer;
 pub use world::{
-    AmbientLight, DirectionalLight, MaterialBuilder, Panel, PointLight, Sphere, Triangle, Vec3, PanelLight
+    AmbientLight, DirectionalLight, MaterialBuilder, Panel, PanelLight, PointLight, Sphere,
+    Triangle, Vec3,
 };
