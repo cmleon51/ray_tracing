@@ -34,8 +34,7 @@ impl PanelLight {
         let height_steps: i32 = (panel_height / intersection_gap).floor() as i32;
 
         let panel_area = panel_width * panel_height;
-        let sample_area = panel_area / f64::from((width_steps - 2) * (height_steps - 2));
-        intensity *= sample_area;
+        intensity /= panel_area;
 
         // multiplying the light_color by the intensity to give the user some feedback
         let panel = Panel::new(
