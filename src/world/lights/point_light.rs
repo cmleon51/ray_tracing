@@ -47,13 +47,6 @@ impl Light for PointLight {
             let light_direction = self.position - point;
             let mut object_color = ray_object.get_hit_object().get_color(point);
 
-            // the object's color is affected by the light's color
-            object_color = RGB::new(
-                (f64::from(object_color.get_red()) * (f64::from(self.light_color.get_red()) / 255.0)) as u8,
-                (f64::from(object_color.get_green()) * (f64::from(self.light_color.get_green()) / 255.0)) as u8,
-                (f64::from(object_color.get_blue()) * (f64::from(self.light_color.get_blue()) / 255.0)) as u8,
-            );
-
             // after we get the light direction we need to compute if there are objects in our way
             // between the 'current_object' and the 'other_objects'
             let ray_to_light = Ray::new(point, light_direction);
@@ -97,6 +90,13 @@ impl Light for PointLight {
             let attenuation = 1.0 / (1.0 + 0.09 * light_length + 0.032 * light_length * light_length);
 
             let mut final_color = (object_color) * light_intensity * attenuation;
+
+            // adding the light's color
+            final_color = RGB::new(
+                (f64::from(final_color.get_red()) * (f64::from(self.light_color.get_red()) / 255.0)) as u8,
+                (f64::from(final_color.get_green()) * (f64::from(self.light_color.get_green()) / 255.0)) as u8,
+                (f64::from(final_color.get_blue()) * (f64::from(self.light_color.get_blue()) / 255.0)) as u8,
+            );
 
             // calculate the refraction
             if let Some(material_refraction) = *material.get_refraction() {
