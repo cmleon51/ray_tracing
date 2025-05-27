@@ -19,8 +19,16 @@ impl PanelLight {
             None => RGB::new(255, 255, 255)
         };
 
-        intensity *= (panel_width * panel_height); // the intensity increases as the area of the light source does
-        let panel = Panel::new(panel_origin, panel_width, panel_height, panel_normal, MaterialBuilder::new().set_color(light_color * intensity).build());
+        // we calculate how many steps we have to take based upon the 'intesection_gap' variable
+        let width_steps: i32 = (panel_width / intersection_gap).floor() as i32;
+        let height_steps: i32 = (panel_height / intersection_gap).floor() as i32;
+
+        let panel_area = panel_width * panel_height;
+        let sample_area = panel_area / f64::from((width_steps - 2) * (height_steps - 2));
+        intensity *= sample_area;
+
+        // multiplying the light_color by the intensity to give the user some feedback
+       let panel = Panel::new(panel_origin, panel_width, panel_height, panel_normal, MaterialBuilder::new().set_color(light_color * (intensity.min(1.0))).build());
 
         // we calculate every point on the surface we have to check when doing light calculations
         let panel_u = panel.get_u();
@@ -29,10 +37,6 @@ impl PanelLight {
         // we start marking points on the top left of the panel
         let mut intersection_points: Vec<Vec3> = vec![];
         let panel_top_left = (panel_v - panel_u) + panel_origin;
-
-        // we calculate how many steps we have to take based upon the 'intesection_gap' variable
-        let width_steps: i32 = (panel_width / intersection_gap).floor() as i32;
-        let height_steps: i32 = (panel_height / intersection_gap).floor() as i32;
 
         for i in 1..(width_steps - 1) {
             let i_step = (intersection_gap * f64::from(i)) / (panel_width / 2.0);
