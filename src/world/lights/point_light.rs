@@ -87,9 +87,9 @@ impl Light for PointLight {
             }
 
             // using light_length to determine the light_intensity
-            let attenuation = 1.0 / (1.0 + 0.09 * light_length + 0.032 * light_length * light_length);
+            let attenuation = light_intensity / (1.0 + 0.09 * light_length + 0.032 * light_length * light_length);
 
-            let mut final_color = (object_color) * light_intensity * attenuation;
+            let mut final_color = (object_color) * (attenuation);
 
             // adding the light's color
             final_color = RGB::new(
