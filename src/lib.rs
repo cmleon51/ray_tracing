@@ -14,9 +14,11 @@ mod world;
 mod ray_tracer;
 
 // extract everything that is needed to create the ray tracing
-pub use canvas::RGB;
-pub use ray_tracer::RayTracer;
-pub use world::{
-    AmbientLight, DirectionalLight, MaterialBuilder, Panel, PanelLight, PointLight, Sphere,
-    Triangle, Vec3,
-};
+pub mod prelude {
+    pub use crate::canvas::RGB;
+    pub use crate::ray_tracer::RayTracer;
+    pub use crate::world::{
+        AmbientLight, DirectionalLight, MaterialBuilder, Panel, PanelLight, PointLight, Sphere,
+        Triangle, Vec3,
+    };
+}

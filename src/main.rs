@@ -1,9 +1,4 @@
-use ray_tracing::RGB;
-use ray_tracing::RayTracer;
-use ray_tracing::{
-    AmbientLight, DirectionalLight, MaterialBuilder, Panel, PanelLight, PointLight, Sphere,
-    Triangle, Vec3,
-};
+use ray_tracing::prelude::*;
 use std::fs::File;
 use std::io::prelude::Write;
 
