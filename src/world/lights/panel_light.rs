@@ -1,6 +1,6 @@
 use crate::canvas::RGB;
 use crate::world::{
-    Light, MaterialBuilder, Object, ObjectRayIntersection, Panel, PointLight, Ray, Vec3,
+    Light, Lights, MaterialBuilder, Object, ObjectRayIntersection, Objects, Ray, Vec3,
 };
 use rand::Rng;
 
@@ -37,7 +37,7 @@ impl PanelLight {
         intensity /= panel_area;
 
         // multiplying the light_color by the intensity to give the user some feedback
-        let panel = Panel::new(
+        let panel = Objects::create_object(Objects::PANEL(
             panel_origin,
             panel_width,
             panel_height,
@@ -45,11 +45,23 @@ impl PanelLight {
             MaterialBuilder::new()
                 .set_color(light_color * (intensity.min(1.0)))
                 .build(),
-        );
+        ));
 
+        // TODO: remove this code duplication
         // we calculate every point on the surface we have to check when doing light calculations
-        let panel_u = panel.get_u();
-        let panel_v = panel.get_v();
+        let mut panel_u = *panel_origin.cross_product(&panel_normal).make_unit();
+        let mut panel_v = panel_normal.cross_product(&panel_u);
+
+        // if the scalar_vectors are impossible then they are "normal"
+        if panel_u.get_x().is_nan() && panel_u.get_y().is_nan() && panel_u.get_z().is_nan()
+            || panel_v.get_x().is_nan() && panel_v.get_y().is_nan() && panel_v.get_z().is_nan()
+        {
+            panel_u = Vec3::new(1.0, 0.0, 0.0);
+            panel_v = Vec3::new(0.0, 1.0, 0.0);
+        }
+
+        panel_u = panel_u * (panel_width / 2.0);
+        panel_v = panel_v * (panel_height / 2.0);
 
         // we start marking points on the top left of the panel
         let mut intersection_points: Vec<Vec3> = vec![];
@@ -70,7 +82,7 @@ impl PanelLight {
         }
 
         return Self {
-            panel: Box::new(panel),
+            panel: panel,
             intersection_points,
             intensity,
         };
@@ -96,11 +108,11 @@ impl Light for PanelLight {
             let mut final_green: u32 = 0;
             let mut final_blue: u32 = 0;
             for intersection_point in &self.intersection_points {
-                let point_light = PointLight::new(
+                let point_light = Lights::create_light(Lights::POINT_LIGHT(
                     *intersection_point,
                     self.intensity,
                     Some(*self.panel.get_material().get_color()),
-                );
+                ));
                 let calculated_color = point_light.compute_color(
                     ray_object,
                     other_objects,

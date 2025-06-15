@@ -48,15 +48,15 @@ impl RayTracer {
     }
 
     /// adds a new object in the ray tracer
-    pub fn add_object(&mut self, new_object: impl Object + 'static) -> &mut Self {
-        self.objects.push(Box::new(new_object));
+    pub fn add_object(&mut self, new_object: Box<dyn Object>) -> &mut Self {
+        self.objects.push(new_object);
 
         return self;
     }
 
     /// addsa new light in the ray tracer
-    pub fn add_light(&mut self, new_light: impl Light + 'static) -> &mut Self {
-        self.lights.push(Box::new(new_light));
+    pub fn add_light(&mut self, new_light: Box<dyn Light>) -> &mut Self {
+        self.lights.push(new_light);
 
         return self;
     }

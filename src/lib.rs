@@ -17,8 +17,5 @@ mod ray_tracer;
 pub mod prelude {
     pub use crate::canvas::RGB;
     pub use crate::ray_tracer::RayTracer;
-    pub use crate::world::{
-        AmbientLight, DirectionalLight, MaterialBuilder, Panel, PanelLight, PointLight, Sphere,
-        Triangle, Vec3,
-    };
+    pub use crate::world::{Lights, MaterialBuilder, Objects, Vec3};
 }

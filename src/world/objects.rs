@@ -128,6 +128,37 @@ mod sphere;
 mod triangle;
 
 // extracting everything we may need
-pub use panel::Panel;
-pub use sphere::Sphere;
-pub use triangle::Triangle;
+use panel::Panel;
+use sphere::Sphere;
+use triangle::Triangle;
+
+use super::MaterialBuilder;
+
+/// enum containing all of the object types we can create
+pub enum Objects {
+    SPHERE(Vec3, f64, Material),
+    TRIANGLE(Vec3, Vec3, Vec3, Material),
+    PANEL(Vec3, f64, f64, Vec3, Material),
+}
+
+impl Objects {
+    pub fn create_object(object: Objects) -> Box<dyn Object> {
+        match object {
+            Objects::SPHERE(position, radius, material) => {
+                return Box::new(Sphere::new(position, radius, material));
+            }
+            Objects::TRIANGLE(vertice_1, vertice_2, vertice_3, material) => {
+                return Box::new(Triangle::new(vertice_1, vertice_2, vertice_3, material));
+            }
+            Objects::PANEL(panel_origin, panel_width, panel_height, mut panel_normal, material) => {
+                return Box::new(Panel::new(
+                    panel_origin,
+                    panel_width,
+                    panel_height,
+                    panel_normal,
+                    material,
+                ));
+            }
+        };
+    }
+}

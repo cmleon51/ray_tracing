@@ -13,8 +13,8 @@ mod vec3;
 
 // extracting everything that is useful
 pub use camera::{Camera, ViewportAngles};
-pub use lights::{AmbientLight, DirectionalLight, Light, PanelLight, PointLight};
+pub use lights::{Light, Lights};
 pub use materials::{Material, MaterialBuilder};
-pub use objects::{Object, ObjectRayIntersection, Panel, Sphere, Triangle};
+pub use objects::{Object, ObjectRayIntersection, Objects};
 pub use ray::Ray;
 pub use vec3::Vec3;

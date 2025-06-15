@@ -31,7 +31,50 @@ mod panel_light;
 mod point_light;
 
 // extracting everything we may need
-pub use ambient_light::AmbientLight;
-pub use directional_light::DirectionalLight;
-pub use panel_light::PanelLight;
-pub use point_light::PointLight;
+use ambient_light::AmbientLight;
+use directional_light::DirectionalLight;
+use panel_light::PanelLight;
+use point_light::PointLight;
+
+/// enum containing all of the light's types we can create
+pub enum Lights {
+    AMBIENT_LIGHT(f64),
+    DIRECTIONAL_LIGHT(Vec3, f64),
+    PANEL_LIGHT(Vec3, f64, f64, Vec3, f64, f64, Option<RGB>),
+    POINT_LIGHT(Vec3, f64, Option<RGB>),
+}
+
+impl Lights {
+    pub fn create_light(light: Lights) -> Box<dyn Light> {
+        match light {
+            Lights::AMBIENT_LIGHT(intensity) => {
+                return Box::new(AmbientLight::new(intensity));
+            }
+            Lights::DIRECTIONAL_LIGHT(direction, intensity) => {
+                return Box::new(DirectionalLight::new(direction, intensity));
+            }
+            Lights::PANEL_LIGHT(
+                panel_origin,
+                panel_width,
+                panel_height,
+                panel_normal,
+                mut intensity,
+                intersection_gap,
+                light_color,
+            ) => {
+                return Box::new(PanelLight::new(
+                    panel_origin,
+                    panel_width,
+                    panel_height,
+                    panel_normal,
+                    intensity,
+                    intersection_gap,
+                    light_color,
+                ));
+            }
+            Lights::POINT_LIGHT(position, intensity, light_color) => {
+                return Box::new(PointLight::new(position, intensity, light_color));
+            }
+        };
+    }
+}
