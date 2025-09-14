@@ -1,6 +1,4 @@
-use crate::canvas::RGB;
-use crate::world::Ray;
-use crate::world::Vec3;
+use canvas::RGB;
 
 /// module implementing a texture
 mod texture;
@@ -18,9 +16,6 @@ use texture::Texture;
 /// and print all of it's properties
 ///
 /// ```no_run
-/// use ray_tracing::Material;
-///
-/// fn main() {
 ///     let material: Material = Material::new(
 ///         RGB::new(0, 0, 0),
 ///         None,
@@ -36,7 +31,6 @@ use texture::Texture;
 ///     println!("Specularity: {:?}", material.get_specularity());
 ///     println!("Refraction: {:?}", material.get_refraction());
 ///     println!("Transparency: {:?}", material.get_transparency());
-/// }
 /// ```
 #[derive(Debug, Clone)]
 pub struct Material {
@@ -58,63 +52,55 @@ impl Material {
         refraction: Option<f64>,
         transparency: Option<f64>,
     ) -> Self {
-        let reflectiveness = match reflectiveness {
-            None => None,
-            Some(reflectiveness) => Some(reflectiveness.clamp(0.0, 1.0)),
-        };
-        let texture = match texture_path {
-            Some(texture_path) => Some(Texture::load(texture_path)),
-            None => None,
-        };
+        let reflectiveness = reflectiveness.map(|reflectiveness| reflectiveness.clamp(0.0, 1.0));
+        let texture = texture_path.map(Texture::load);
 
         // if we have refraction then trasparency will be full only when `transparency` is not
         // given
         let transparency = if let Some(transparency) = transparency {
             Some(transparency.clamp(0.0, 1.0))
-        } else if let Some(refraction) = refraction {
-            Some(1.0)
         } else {
-            None
+            refraction.map(|_| 1.0)
         };
 
-        return Self {
+        Self {
             color,
             texture,
             reflectiveness,
             specularity,
             refraction,
             transparency,
-        };
+        }
     }
 
     /// retrieves the material's texture
     pub fn get_texture(&self) -> &Option<Texture> {
-        return &self.texture;
+        &self.texture
     }
 
     /// retrieves the material's specularity value
     pub fn get_specularity(&self) -> &Option<f64> {
-        return &self.specularity;
+        &self.specularity
     }
 
     /// retrieves the material's reflectiveness
     pub fn get_reflectiveness(&self) -> &Option<f64> {
-        return &self.reflectiveness;
+        &self.reflectiveness
     }
 
     /// retrieves the material's color
     pub fn get_color(&self) -> &RGB {
-        return &self.color;
+        &self.color
     }
 
     /// retrieves the material's refraction index
     pub fn get_refraction(&self) -> &Option<f64> {
-        return &self.refraction;
+        &self.refraction
     }
 
     /// retrieve the material's transparency level
     pub fn get_transparency(&self) -> &Option<f64> {
-        return &self.transparency;
+        &self.transparency
     }
 }
 
@@ -132,54 +118,60 @@ pub struct MaterialBuilder<'a> {
 
 impl<'a> MaterialBuilder<'a> {
     pub fn new() -> Self {
-        return Self {
-            color: RGB::new(0, 0, 0),
-            texture_path: None,
-            reflectiveness: None,
-            specularity: None,
-            refraction: None,
-            transparency: None,
-        };
+        Self::default()
     }
 
     pub fn set_color(&mut self, color: RGB) -> &mut Self {
         self.color = color;
-        return self;
+        self
     }
 
     pub fn set_texture(&mut self, texture_path: &'a str) -> &mut Self {
         self.texture_path = Some(texture_path);
-        return self;
+        self
     }
 
     pub fn set_reflectiveness(&mut self, reflectiveness: f64) -> &mut Self {
         self.reflectiveness = Some(reflectiveness);
-        return self;
+        self
     }
 
     pub fn set_specularity(&mut self, specularity: f64) -> &mut Self {
         self.specularity = Some(specularity);
-        return self;
+        self
     }
 
     pub fn set_refraction(&mut self, refraction: f64) -> &mut Self {
         self.refraction = Some(refraction);
-        return self;
+        self
     }
 
     pub fn set_transparency(&mut self, transparency: f64) -> &mut Self {
         self.transparency = Some(transparency);
-        return self;
+        self
     }
 
     pub fn build(&self) -> Material {
-        return Material::new(
+        Material::new(
             self.color,
             self.texture_path,
             self.reflectiveness,
             self.specularity,
             self.refraction,
             self.transparency,
-        );
+        )
+    }
+}
+
+impl Default for MaterialBuilder<'_> {
+    fn default() -> Self {
+        Self {
+            color: RGB::new(0, 0, 0),
+            texture_path: None,
+            reflectiveness: None,
+            specularity: None,
+            refraction: None,
+            transparency: None,
+        }
     }
 }

@@ -1,0 +1,12 @@
+[package]
+name = "ray_tracer"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies.canvas]
+path = "../canvas"
+version = "*"
+
+[dependencies.world]
+path = "../world"
+version = "*"

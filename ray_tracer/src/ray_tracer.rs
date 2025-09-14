@@ -1,5 +1,7 @@
-use crate::canvas::*;
-use crate::world::*;
+#![allow(clippy::too_many_arguments)]
+
+use canvas::*;
+use world::*;
 
 pub struct RayTracer {
     camera: Camera,
@@ -35,7 +37,7 @@ impl RayTracer {
         let viewport_incr_x = (*camera.get_viewport_width()) / f64::from(canvas.get_width());
         let viewport_incr_y = (*camera.get_viewport_height()) / f64::from(canvas.get_height());
 
-        return RayTracer {
+        RayTracer {
             camera,
             canvas,
             background_color,
@@ -44,21 +46,17 @@ impl RayTracer {
             objects: vec![],
             lights: vec![],
             pixel_samples,
-        };
+        }
     }
 
     /// adds a new object in the ray tracer
-    pub fn add_object(&mut self, new_object: Box<dyn Object>) -> &mut Self {
+    pub fn add_object(&mut self, new_object: Box<dyn Object>) {
         self.objects.push(new_object);
-
-        return self;
     }
 
     /// addsa new light in the ray tracer
-    pub fn add_light(&mut self, new_light: Box<dyn Light>) -> &mut Self {
+    pub fn add_light(&mut self, new_light: Box<dyn Light>) {
         self.lights.push(new_light);
-
-        return self;
     }
 
     /// this functions traces a ray between the starting and end position, returning an RGB color
@@ -113,11 +111,11 @@ impl RayTracer {
             }
         }
 
-        return RGB::new(
+        RGB::new(
             final_red.saturating_div(self.pixel_samples).min(255) as u8,
             final_green.saturating_div(self.pixel_samples).min(255) as u8,
             final_blue.saturating_div(self.pixel_samples).min(255) as u8,
-        );
+        )
     }
 
     /// this function renders the image on the "canvas"
@@ -126,7 +124,7 @@ impl RayTracer {
         let viewport_upper_left = self.camera.get_viewport_angle(ViewportAngles::UpperLeft);
 
         for pixel in &mut canvas {
-            let mut new_color: RGB = self.background_color;
+            println!("{:?}", pixel);
             let pixel_center = viewport_upper_left
                 + ((*self.camera.get_u_vector())
                     * (f64::from(pixel.get_x()) * self.viewport_incr_x))
@@ -141,6 +139,6 @@ impl RayTracer {
 
     /// this function returns the "canvas"
     pub fn get_canvas(&self) -> &Canvas {
-        return &self.canvas;
+        &self.canvas
     }
 }

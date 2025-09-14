@@ -1,4 +1,4 @@
-use crate::world::vec3::Vec3;
+use crate::vec3::Vec3;
 
 /// An Object abstracting the viewport
 ///
@@ -29,11 +29,6 @@ pub enum ViewportAngles {
 /// Create a new Camera
 ///
 /// ```no_run
-/// use ray_tracing::world::Vec3;
-/// use ray_tracing::world::Ray;
-/// use ray_tracing::world::Camera;
-///
-/// fn main() {
 ///     let camera = Camera::new(
 ///         Vec3::new(0.0, 0.0, 0.0),
 ///         Vec3::new( 0.0, 0.0, 1.0),
@@ -41,7 +36,7 @@ pub enum ViewportAngles {
 ///         2.0,
 ///         16.0 / 9.0
 ///     );
-/// }
+/// ```
 #[derive(Debug)]
 pub struct Camera {
     position: Vec3,
@@ -78,7 +73,7 @@ impl Camera {
 
         camera.update_camera();
 
-        return camera;
+        camera
     }
 
     /// updates the camera's position vector
@@ -87,65 +82,61 @@ impl Camera {
 
         self.update_camera();
 
-        return self;
+        self
     }
 
     /// updates the camera's look at vector
     pub fn set_look_at(&mut self, mut new_look_at: Vec3) -> &mut Self {
         self.look_at = *new_look_at.make_unit();
 
-        self.update_camera();
-
-        return self;
+        self.update_camera()
     }
 
     /// updates the camera's up vector
     pub fn set_up_vector(&mut self, new_up: Vec3) -> &mut Self {
         self.up_vector = new_up;
 
-        self.update_camera();
-
-        return self;
+        self.update_camera()
     }
 
     /// retrieves the camera's position vector
     pub fn get_position(&self) -> &Vec3 {
-        return &self.position;
+        &self.position
     }
 
     /// retrieves the camera's look at vector
     pub fn get_look_at(&self) -> &Vec3 {
-        return &self.look_at;
+        &self.look_at
     }
 
     /// retrieves the camera's up vector
     pub fn get_up_vector(&self) -> &Vec3 {
-        return &self.up_vector;
+        &self.up_vector
     }
 
     /// retrieves the camera's u vector
     pub fn get_u_vector(&self) -> &Vec3 {
-        return &self.u_vector;
+        &self.u_vector
     }
 
     /// retrieves the camera's v vector
     pub fn get_v_vector(&self) -> &Vec3 {
-        return &self.v_vector;
+        &self.v_vector
     }
 
     /// retrieves the camera's viewport width
     pub fn get_viewport_width(&self) -> &f64 {
-        return &self.viewport.width;
+        &self.viewport.width
     }
 
     /// retrieves the camera's viewport height
     pub fn get_viewport_height(&self) -> &f64 {
-        return &self.viewport.height;
+        &self.viewport.height
     }
 
     /// retrieves the specified ['ViewportAngle'] of the viewport
     pub fn get_viewport_angle(&self, wich_angle: ViewportAngles) -> Vec3 {
-        return match wich_angle {
+        match wich_angle {
             ViewportAngles::UpperLeft => {
                 self.position - (self.u_vector * (self.viewport.width / 2.0))
                     + (self.v_vector * self.viewport.height / 2.0)
@@ -168,7 +159,7 @@ impl Camera {
                     - (self.v_vector * self.viewport.height / 2.0)
                     + self.look_at
             }
-        };
+        }
     }
 
     /// updates the camera's u vector, v vector and viewport (this function is called every time the camera
@@ -182,6 +173,6 @@ impl Camera {
         self.v_vector.make_unit();
         self.look_at.make_unit();
 
-        return self;
+        self
     }
 }

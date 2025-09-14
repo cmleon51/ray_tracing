@@ -1,8 +1,5 @@
-use crate::canvas::RGB;
-use crate::world::{
-    Light, Lights, MaterialBuilder, Object, ObjectRayIntersection, Objects, Ray, Vec3,
-};
-use rand::Rng;
+use crate::{Light, Lights, MaterialBuilder, Object, ObjectRayIntersection, Objects, Vec3};
+use canvas::RGB;
 
 /// Object abstracting a panel area light
 ///
@@ -37,7 +34,7 @@ impl PanelLight {
         intensity /= panel_area;
 
         // multiplying the light_color by the intensity to give the user some feedback
-        let panel = Objects::create_object(Objects::PANEL(
+        let panel = Objects::create_object(Objects::Panel(
             panel_origin,
             panel_width,
             panel_height,
@@ -81,11 +78,11 @@ impl PanelLight {
             }
         }
 
-        return Self {
-            panel: panel,
+        Self {
+            panel,
             intersection_points,
             intensity,
-        };
+        }
     }
 }
 
@@ -93,8 +90,8 @@ impl Light for PanelLight {
     fn compute_color(
         &self,
         ray_object: &ObjectRayIntersection,
-        other_objects: &Vec<Box<dyn Object>>,
-        other_lights: &Vec<Box<dyn Light>>,
+        other_objects: &[Box<dyn Object>],
+        other_lights: &[Box<dyn Light>],
         light_bounces: u8,
         background_color: RGB,
     ) -> RGB {
@@ -103,49 +100,50 @@ impl Light for PanelLight {
         let point = *ray_object.get_hit_point();
         let current_object = ray_object.get_hit_object();
 
-        if let Some(normal) = current_object.get_normal(point) {
-            let mut final_red: u32 = 0;
-            let mut final_green: u32 = 0;
-            let mut final_blue: u32 = 0;
-            for intersection_point in &self.intersection_points {
-                let point_light = Lights::create_light(Lights::POINT_LIGHT(
-                    *intersection_point,
-                    self.intensity,
-                    Some(*self.panel.get_material().get_color()),
-                ));
-                let calculated_color = point_light.compute_color(
-                    ray_object,
-                    other_objects,
-                    other_lights,
-                    light_bounces,
-                    background_color,
-                );
+        match current_object.get_normal(point) {
+            Some(_) => {
+                let mut final_red: u32 = 0;
+                let mut final_green: u32 = 0;
+                let mut final_blue: u32 = 0;
+                for intersection_point in &self.intersection_points {
+                    let point_light = Lights::create_light(Lights::PointLight(
+                        *intersection_point,
+                        self.intensity,
+                        Some(*self.panel.get_material().get_color()),
+                    ));
+                    let calculated_color = point_light.compute_color(
+                        ray_object,
+                        other_objects,
+                        other_lights,
+                        light_bounces,
+                        background_color,
+                    );
 
-                final_red = final_red.saturating_add(u32::from(calculated_color.get_red()));
-                final_green = final_green.saturating_add(u32::from(calculated_color.get_green()));
-                final_blue = final_blue.saturating_add(u32::from(calculated_color.get_blue()));
+                    final_red = final_red.saturating_add(u32::from(calculated_color.get_red()));
+                    final_green =
+                        final_green.saturating_add(u32::from(calculated_color.get_green()));
+                    final_blue = final_blue.saturating_add(u32::from(calculated_color.get_blue()));
+                }
+
+                let intersection_samples_count: u32 = self.intersection_points.len() as u32;
+
+                RGB::new(
+                    final_red
+                        .saturating_div(intersection_samples_count)
+                        .min(255) as u8,
+                    final_green
+                        .saturating_div(intersection_samples_count)
+                        .min(255) as u8,
+                    final_blue
+                        .saturating_div(intersection_samples_count)
+                        .min(255) as u8,
+                )
             }
-
-            let intersection_samples_count: u32 = self.intersection_points.len() as u32;
-            let final_color = RGB::new(
-                final_red
-                    .saturating_div(intersection_samples_count)
-                    .min(255) as u8,
-                final_green
-                    .saturating_div(intersection_samples_count)
-                    .min(255) as u8,
-                final_blue
-                    .saturating_div(intersection_samples_count)
-                    .min(255) as u8,
-            );
-
-            return final_color;
+            None => RGB::new(0, 0, 0),
         }
-
-        return RGB::new(0, 0, 0);
     }
 
     fn get_object(&self) -> Option<&Box<dyn Object>> {
-        return Some(&self.panel);
+        Some(&self.panel)
     }
 }

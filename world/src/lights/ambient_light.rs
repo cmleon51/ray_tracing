@@ -1,5 +1,5 @@
-use crate::canvas::RGB;
-use crate::world::{Light, Object, ObjectRayIntersection, Ray, Vec3};
+use crate::{Light, Object, ObjectRayIntersection};
+use canvas::RGB;
 
 /// Object abstracting an ambient light
 ///
@@ -11,7 +11,7 @@ pub struct AmbientLight {
 
 impl AmbientLight {
     pub fn new(intensity: f64) -> Self {
-        return Self { intensity };
+        Self { intensity }
     }
 }
 
@@ -19,19 +19,17 @@ impl Light for AmbientLight {
     fn compute_color(
         &self,
         ray_object: &ObjectRayIntersection,
-        other_objects: &Vec<Box<dyn Object>>,
-        other_lights: &Vec<Box<dyn Light>>,
-        light_bounces: u8,
-        background_color: RGB,
+        _other_objects: &[Box<dyn Object>],
+        _other_lights: &[Box<dyn Light>],
+        _light_bounces: u8,
+        _background_color: RGB,
     ) -> RGB {
         let point = *ray_object.get_hit_point();
-        let material = ray_object.get_hit_object().get_material();
         let object_color = ray_object.get_hit_object().get_color(point);
 
-        if let Some(_) = ray_object.get_hit_object().get_normal(point) {
-            return (object_color) * self.intensity;
+        match ray_object.get_hit_object().get_normal(point) {
+            Some(_) => (object_color) * self.intensity,
+            None => RGB::new(0, 0, 0),
         }
-
-        return RGB::new(0, 0, 0);
     }
 }

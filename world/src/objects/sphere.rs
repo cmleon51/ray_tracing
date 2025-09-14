@@ -1,8 +1,8 @@
 use std::f64;
 
 use super::{Material, Object};
-use crate::canvas::RGB;
-use crate::world::{Ray, Vec3};
+use crate::{Ray, Vec3};
+use canvas::RGB;
 
 /// object to abstract a sphere in our ray traced world
 ///
@@ -19,11 +19,11 @@ impl Sphere {
     /// function to create a new sphere
     /// even thogh the fields are public i like to have a function to create a new sphere
     pub fn new(position: Vec3, radius: f64, material: Material) -> Self {
-        return Self {
+        Self {
             position,
             radius,
             material,
-        };
+        }
     }
 }
 
@@ -43,7 +43,7 @@ impl Object for Sphere {
         let t1 = (-b + discriminant.sqrt()) / (2.0 * a);
         let t2 = (-b - discriminant.sqrt()) / (2.0 * a);
 
-        return Some(f64::min(t1, t2)); // i think that the syntax is more readable like this
+        Some(f64::min(t1, t2)) // i think that the syntax is more readable like this
     }
 
     // TODO: check if the point is inside of the sphere in a better way since we have to account
@@ -53,11 +53,11 @@ impl Object for Sphere {
         //    return None;
         //}
 
-        return Some(*((point - self.position).make_unit()));
+        Some(*((point - self.position).make_unit()))
     }
 
     fn get_material(&self) -> &Material {
-        return &(self.material);
+        &(self.material)
     }
 
     fn get_color(&self, point: Vec3) -> RGB {
@@ -75,6 +75,6 @@ impl Object for Sphere {
             final_color += texture.get_color(u, v);
         }
 
-        return final_color;
+        final_color
     }
 }

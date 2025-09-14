@@ -16,38 +16,38 @@ impl RGB {
 
     /// retrieves the rgb's red value
     pub fn get_red(&self) -> u8 {
-        return self.red;
+        self.red
     }
 
     /// retrieves the rgb's green value
     pub fn get_green(&self) -> u8 {
-        return self.green;
+        self.green
     }
 
     /// retrieves the rgb's blue value
     pub fn get_blue(&self) -> u8 {
-        return self.blue;
+        self.blue
     }
 
     /// sets the rgb's red value
     pub fn set_red(&mut self, new_red: u8) -> &mut Self {
         self.red = new_red;
 
-        return self;
+        self
     }
 
     /// sets the rgb's green value
     pub fn set_green(&mut self, new_green: u8) -> &mut Self {
         self.green = new_green;
 
-        return self;
+        self
     }
 
     /// sets the rgb's blue value
     pub fn set_blue(&mut self, new_blue: u8) -> &mut Self {
         self.blue = new_blue;
 
-        return self;
+        self
     }
 }
 
@@ -55,11 +55,11 @@ impl ops::Mul<f64> for RGB {
     type Output = Self;
 
     fn mul(self, rhs: f64) -> Self::Output {
-        return RGB::new(
+        RGB::new(
             (f64::from(self.red) * rhs) as u8,
             (f64::from(self.green) * rhs) as u8,
             (f64::from(self.blue) * rhs) as u8,
-        );
+        )
     }
 }
 
@@ -67,11 +67,11 @@ impl ops::Add<RGB> for RGB {
     type Output = Self;
 
     fn add(self, rhs: Self) -> Self::Output {
-        return RGB::new(
+        RGB::new(
             self.red.saturating_add(rhs.red),
             self.green.saturating_add(rhs.green),
             self.blue.saturating_add(rhs.blue),
-        );
+        )
     }
 }
 
@@ -87,10 +87,10 @@ impl ops::Div<u8> for RGB {
     type Output = RGB;
 
     fn div(self, rhs: u8) -> Self::Output {
-        return RGB::new(
+        RGB::new(
             self.red.saturating_div(rhs),
             self.green.saturating_div(rhs),
             self.blue.saturating_div(rhs),
-        );
+        )
     }
 }

@@ -1,7 +1,6 @@
-use crate::canvas::RGB;
-use crate::ray_tracer::RayTracer;
-use crate::world::objects::Object;
-use crate::world::{ObjectRayIntersection, Ray, Vec3};
+use crate::objects::Object;
+use crate::{ObjectRayIntersection, Vec3};
+use canvas::RGB;
 
 /// trough this trait we can implement every type of light we may need for our ray traced world
 pub trait Light {
@@ -9,15 +8,15 @@ pub trait Light {
     fn compute_color(
         &self,
         ray_object: &ObjectRayIntersection,
-        other_objects: &Vec<Box<dyn Object>>,
-        other_lights: &Vec<Box<dyn Light>>,
+        other_objects: &[Box<dyn Object>],
+        other_lights: &[Box<dyn Light>],
         light_bounces: u8,
         background_color: RGB,
     ) -> RGB;
 
     /// this function returns the light's objects (necessary to implement area lights)
     fn get_object(&self) -> Option<&Box<dyn Object>> {
-        return None;
+        None
     }
 }
 
@@ -38,43 +37,39 @@ use point_light::PointLight;
 
 /// enum containing all of the light's types we can create
 pub enum Lights {
-    AMBIENT_LIGHT(f64),
-    DIRECTIONAL_LIGHT(Vec3, f64),
-    PANEL_LIGHT(Vec3, f64, f64, Vec3, f64, f64, Option<RGB>),
-    POINT_LIGHT(Vec3, f64, Option<RGB>),
+    AmbientLight(f64),
+    DirectionalLight(Vec3, f64),
+    PanelLight(Vec3, f64, f64, Vec3, f64, f64, Option<RGB>),
+    PointLight(Vec3, f64, Option<RGB>),
 }
 
 impl Lights {
     pub fn create_light(light: Lights) -> Box<dyn Light> {
         match light {
-            Lights::AMBIENT_LIGHT(intensity) => {
-                return Box::new(AmbientLight::new(intensity));
+            Lights::AmbientLight(intensity) => Box::new(AmbientLight::new(intensity)),
+            Lights::DirectionalLight(direction, intensity) => {
+                Box::new(DirectionalLight::new(direction, intensity))
             }
-            Lights::DIRECTIONAL_LIGHT(direction, intensity) => {
-                return Box::new(DirectionalLight::new(direction, intensity));
-            }
-            Lights::PANEL_LIGHT(
+            Lights::PanelLight(
                 panel_origin,
                 panel_width,
                 panel_height,
                 panel_normal,
-                mut intensity,
+                intensity,
                 intersection_gap,
                 light_color,
-            ) => {
-                return Box::new(PanelLight::new(
-                    panel_origin,
-                    panel_width,
-                    panel_height,
-                    panel_normal,
-                    intensity,
-                    intersection_gap,
-                    light_color,
-                ));
+            ) => Box::new(PanelLight::new(
+                panel_origin,
+                panel_width,
+                panel_height,
+                panel_normal,
+                intensity,
+                intersection_gap,
+                light_color,
+            )),
+            Lights::PointLight(position, intensity, light_color) => {
+                Box::new(PointLight::new(position, intensity, light_color))
             }
-            Lights::POINT_LIGHT(position, intensity, light_color) => {
-                return Box::new(PointLight::new(position, intensity, light_color));
-            }
-        };
+        }
     }
 }

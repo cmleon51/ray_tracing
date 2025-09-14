@@ -1,6 +1,6 @@
-use crate::canvas::RGB;
-use crate::world::objects::{Material, Object};
-use crate::world::{Ray, Vec3};
+use crate::objects::{Material, Object};
+use crate::{Ray, Vec3};
+use canvas::RGB;
 
 /// object to abstract a triangle in our ray traced world
 ///
@@ -15,12 +15,12 @@ pub struct Triangle {
 
 impl Triangle {
     pub fn new(vertice_1: Vec3, vertice_2: Vec3, vertice_3: Vec3, material: Material) -> Self {
-        return Self {
+        Self {
             vertice_1,
             vertice_2,
             vertice_3,
             material,
-        };
+        }
     }
 }
 
@@ -40,7 +40,7 @@ impl Object for Triangle {
         let s = (*ray.get_position()) - self.vertice_1;
         let u = inv_det * s.dot_product(&ray_cross_e2);
 
-        if u < 0.0 || u > 1.0 {
+        if !(0.0..1.0).contains(&u) {
             return None;
         }
 
@@ -53,21 +53,21 @@ impl Object for Triangle {
 
         let t = inv_det * e2.dot_product(&s_cross_e1);
 
-        return Some(t);
+        Some(t)
     }
 
-    fn get_normal(&self, point: Vec3) -> Option<Vec3> {
+    fn get_normal(&self, _point: Vec3) -> Option<Vec3> {
         let e1 = self.vertice_2 - self.vertice_1;
         let e2 = self.vertice_3 - self.vertice_1;
 
-        return Some(e1.cross_product(&e2));
+        Some(e1.cross_product(&e2))
     }
 
     fn get_material(&self) -> &Material {
-        return &(self.material);
+        &(self.material)
     }
 
-    fn get_color(&self, point: Vec3) -> RGB {
-        return *self.get_material().get_color();
+    fn get_color(&self, _point: Vec3) -> RGB {
+        *self.get_material().get_color()
     }
 }

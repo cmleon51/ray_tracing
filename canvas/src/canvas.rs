@@ -1,53 +1,6 @@
-mod color;
-mod pixel;
+pub use crate::color::RGB;
+pub use crate::pixel::Pixel;
 
-pub use color::RGB;
-pub use pixel::Pixel;
-
-/// an object abstracting the output Canvas
-///
-/// An instance of a _Canvas_ can be used to create the necessary output of our ray traced world by
-/// implementing the trait `Render`
-///
-/// # Examples
-///
-/// Create a new image of size 256 x 256 and background color white
-///
-/// ```no_run
-/// use ray_tracing::canvas::{Canvas, RGB};
-///
-/// fn main() {
-///     let image = Canvas::new(256, 256, RGB::new(255, 255, 255));
-/// }
-/// ```
-///
-/// Iterates over all of the [`Pixels`] with immutable references
-///
-/// ```no_run
-/// use ray_tracing::canvas::{Canvas, RGB};
-///
-/// fn main() {
-///     let image = Canvas::new(256, 256, RGB::new(255, 255, 255));
-///
-///     for pixel in image.into_iter() {
-///         println!("{:?}", pixel);
-///     }
-/// }
-/// ```
-///
-/// Iterates over all of the [`Pixels`] with mutable references
-///
-/// ```no_run
-/// use ray_tracing::canvas::{Canvas, RGB};
-///
-/// fn main() {
-///     let mut image = Canvas::new(256, 256, RGB::new(255, 255, 255));
-///
-///     for pixel in (&mut image).into_iter() {
-///         println!("{:?}", pixel);
-///     }
-/// }
-/// ```
 #[derive(Debug, Default)]
 pub struct Canvas {
     width: u32,
@@ -68,35 +21,28 @@ impl Canvas {
             }
         }
 
-        return Self {
+        Self {
             width,
             height,
             pixels,
             aspect_ratio: f64::from(width) / f64::from(height),
-        };
+        }
     }
 
     /// returns a copy of the `width` of the image
     pub fn get_width(&self) -> u32 {
-        return self.width;
+        self.width
     }
 
     /// returns a copy of the `height` of the image
     pub fn get_height(&self) -> u32 {
-        return self.height;
+        self.height
     }
 
     /// returns a copy of the `aspect ratio` of the image
     pub fn get_aspect_ratio(&self) -> f64 {
-        return self.aspect_ratio;
+        self.aspect_ratio
     }
-}
-
-/// trait for implementing a `rendering function` for the given Canvas
-pub trait Render {
-    /// renders and consumes the given Canvas and returns a unit value if everything went well and a string slice
-    /// if something went wrong trough the use of `Result`
-    fn render_image(&self, image: Canvas) -> Result<(), &str>;
 }
 
 impl<'a> IntoIterator for &'a Canvas {
@@ -124,7 +70,7 @@ impl<'a> Iterator for CanvasIterator<'a> {
         let pixel = self.pixels.get(self.index);
         self.index += 1;
 
-        return pixel;
+        pixel
     }
 }
 

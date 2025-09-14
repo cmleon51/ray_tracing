@@ -1,4 +1,4 @@
-use crate::canvas::RGB;
+use canvas::RGB;
 use image::ImageReader;
 
 /// An object rappresenting a texture
@@ -26,17 +26,17 @@ impl Texture {
             image_pixels.push(RGB::new(pixel[0], pixel[1], pixel[2]));
         }
 
-        return Self {
+        Self {
             image_width,
             image_height,
             image: image_pixels,
-        };
+        }
     }
 
     pub fn get_color(&self, mut u: f64, mut v: f64) -> RGB {
         u = f64::floor(f64::clamp(u, 0.0, 1.0) * f64::from(self.image_width));
         v = f64::floor(f64::clamp(v, 0.0, 1.0) * f64::from(self.image_height));
 
-        return self.image[(u + (v * f64::from(self.image_width))) as usize];
+        self.image[(u + (v * f64::from(self.image_width))) as usize]
     }
 }

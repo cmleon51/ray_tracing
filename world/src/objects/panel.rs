@@ -1,6 +1,6 @@
-use crate::canvas::RGB;
-use crate::world::objects::{Material, Object};
-use crate::world::{Ray, Vec3};
+use crate::objects::{Material, Object};
+use crate::{Ray, Vec3};
+use canvas::RGB;
 
 /// object to abstract a panel in our ray traced world
 ///
@@ -38,21 +38,21 @@ impl Panel {
         u = u * (panel_width / 2.0);
         v = v * (panel_height / 2.0);
 
-        return Self {
+        Self {
             panel_origin,
             u,
             v,
             normal: panel_normal,
             material,
-        };
+        }
     }
 
     pub fn get_u(&self) -> Vec3 {
-        return self.u;
+        self.u
     }
 
     pub fn get_v(&self) -> Vec3 {
-        return self.v;
+        self.v
     }
 }
 
@@ -61,7 +61,7 @@ impl Object for Panel {
         let u_v_cross = self.u.cross_product(&self.v);
         let discriminant = ray.get_direction().get_inverse().dot_product(&u_v_cross);
 
-        if discriminant <= 0.001 && discriminant >= -0.001 {
+        if (-0.001..=0.001).contains(&discriminant) {
             return None;
         }
 
@@ -79,22 +79,22 @@ impl Object for Panel {
             .dot_product(&((*ray.get_position()) - self.panel_origin))
             / ray.get_direction().get_inverse().dot_product(&u_v_cross);
 
-        if u_scalar > 1.0 || u_scalar < -1.0 || v_scalar > 1.0 || v_scalar < -1.0 {
+        if !(-1.0..=1.0).contains(&u_scalar) || !(-1.0..=1.0).contains(&v_scalar) {
             return None;
         }
 
-        return Some(t);
+        Some(t)
     }
 
-    fn get_normal(&self, point: Vec3) -> Option<Vec3> {
-        return Some(self.normal);
+    fn get_normal(&self, _point: Vec3) -> Option<Vec3> {
+        Some(self.normal)
     }
 
     fn get_material(&self) -> &Material {
-        return &(self.material);
+        &(self.material)
     }
 
-    fn get_color(&self, point: Vec3) -> RGB {
-        return *self.get_material().get_color();
+    fn get_color(&self, _point: Vec3) -> RGB {
+        *self.get_material().get_color()
     }
 }
